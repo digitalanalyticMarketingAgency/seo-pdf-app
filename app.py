@@ -413,7 +413,7 @@ st.markdown(f"""
         for your business. Should you have any questions, please feel free to reach out to us.
     </p>
     <p style="margin-top:30px; color:#94a3b8; font-size:13px;">
-        # ৪১০ নম্বর লাইনের কোডটি মুছে ফেলে এটি বসান:
+        
     <p style="margin-top:30px; color:#94a3b8; font-size:13px;">
         Digital Analytic &nbsp;|&nbsp; {report_date}
     </p>
