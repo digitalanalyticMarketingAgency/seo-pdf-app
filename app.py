@@ -538,52 +538,54 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 <head>
 <meta charset="UTF-8">
 <style>
-    /* ১. প্রফেশনাল ক্লিন ফন্ট ফিক্স (Arial হচ্ছে ইউনিভার্সাল) */
-    body {{ font-family: Arial, sans-serif; background-color: #ffffff; margin: 0; padding: 0; }}
+    /* ১. ফুটার ওভারল্যাপ ফিক্স এবং প্রফেশনাল ফন্ট */
+    @page {{ size: A4; margin: 15mm 15mm 35mm 15mm; }} 
+    body {{ font-family: Arial, Helvetica, sans-serif; background-color: #0b0f19; margin: 0; padding: 0; color: #e2e8f0; }}
     
-    /* ২. ফুটার ওভারল্যাপ ফিক্স (নিচে পর্যাপ্ত মার্জিন দেওয়া হলো) */
-    @page {{ size: A4; margin: 15mm 15mm 30mm 15mm; }} 
+    .main-container {{ padding: 20px; background-color: #0b0f19; }}
     
-    .main-container {{ padding: 20px; background-color: #ffffff; }}
-    
-    /* প্রিমিয়াম হেডার ডিজাইন */
+    /* ২. লাক্সারি হেডার (রেফারেন্স ইমেজের মতো গ্লো ও গ্রেডিয়েন্ট) */
     .header-banner {{ 
-        background-color: #0f172a; 
+        background: linear-gradient(135deg, #13111c, #1a162b); 
+        border: 1px solid #2d2d44; 
         color: #ffffff; 
-        padding: 30px 20px; 
+        padding: 35px 20px; 
         text-align: center; 
-        border-radius: 12px; 
+        border-radius: 16px; 
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15); 
         margin-bottom: 40px; 
     }}
-    .header-title {{ font-size: 24pt; font-weight: bold; text-transform: uppercase; margin: 0; }}
-    .header-subtitle {{ font-size: 12pt; color: #cbd5e1; margin-top: 8px; }}
+    .header-title {{ font-size: 26pt; font-weight: 800; text-transform: uppercase; margin: 0; letter-spacing: 1px; color: #ffffff; }}
+    .header-subtitle {{ font-size: 12pt; color: #a78bfa; margin-top: 10px; font-weight: 500; }}
     
-    /* সেকশন হেডিং (পেজ-ব্রেক ফিক্স) */
+    /* ৩. সেকশন হেডিং */
     h2 {{ 
         font-size: 16pt; 
-        color: #0f172a; 
+        color: #f8fafc; 
         margin-top: 35px; 
-        margin-bottom: 15px; 
-        border-bottom: 2px solid #e2e8f0;
+        margin-bottom: 20px; 
+        border-bottom: 1px solid #1f2937;
         padding-bottom: 8px;
         page-break-after: avoid; 
     }}
     
-    /* গ্রিড ও কার্ড */
-    .grid {{ width: 100%; border-collapse: separate; border-spacing: 12px 0; margin-bottom: 25px; page-break-inside: avoid; }}
+    /* ৪. ডার্ক ফ্লোটিং কার্ড (নিয়ন অ্যাকসেন্টসহ) */
+    .grid {{ width: 100%; border-collapse: separate; border-spacing: 15px 0; margin-bottom: 25px; page-break-inside: avoid; }}
     
     .card {{ 
-        background-color: #ffffff; 
-        border: 1px solid #e2e8f0; 
+        background-color: #111827; 
+        border: 1px solid #1f2937; 
+        border-top: 2px solid #8b5cf6; 
         border-radius: 12px; 
-        padding: 20px 10px; 
+        padding: 24px 10px; 
         text-align: center; 
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4); 
         page-break-inside: avoid;
     }}
-    .label {{ font-size: 9pt; color: #64748b; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; }}
-    .value {{ font-size: 20pt; font-weight: bold; color: #0f172a; }}
+    .label {{ font-size: 9pt; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }}
+    .value {{ font-size: 24pt; font-weight: 800; color: #ffffff; }}
     
-    /* ফুটার ডিজাইন */
+    /* ৫. ডার্ক ফুটার */
     .footer {{ 
         position: fixed; 
         bottom: 0; 
@@ -591,14 +593,15 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         right: 0; 
         text-align: center; 
         font-size: 10pt; 
-        color: #ffffff; 
-        background-color: #0f172a; 
+        color: #9ca3af; 
+        background-color: #0b0f19; 
+        border-top: 1px solid #1f2937;
         padding: 15px 0; 
     }}
     
-    .error-box {{ background-color: #fef2f2; border-left: 5px solid #ef4444; border-radius: 8px; padding: 10px; margin-bottom: 8px; font-weight: bold; }}
-    .warn-box {{ background-color: #fffbeb; border-left: 5px solid #f59e0b; border-radius: 8px; padding: 10px; margin-bottom: 8px; font-weight: bold; }}
-    .thankyou {{ text-align: center; padding: 60px 20px; page-break-inside: avoid; }}
+    .error-box {{ background-color: #450a0a; border-left: 5px solid #ef4444; border-radius: 8px; padding: 10px; margin-bottom: 8px; color: #fecaca; }}
+    .warn-box {{ background-color: #422006; border-left: 5px solid #f59e0b; border-radius: 8px; padding: 10px; margin-bottom: 8px; color: #fde68a; }}
+    .thankyou {{ text-align: center; padding: 60px 20px; page-break-inside: avoid; color: #e2e8f0; }}
 </style>
 </head>
 <body>
