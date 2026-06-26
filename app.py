@@ -616,29 +616,24 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 
 st.subheader("📄 Export Report")
 if st.button("Download as PDF", type="primary", use_container_width=True):
-with st.spinner("Building your PDF report..."):
-            try:
-                # এখানে সব ভেরিয়েবলগুলো একসাথে পাঠিয়ে দিন
-                pdf_html = build_pdf_html(
-                    agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, sc_position, 
-                    rt_visit, rt_revenue, rt_impression, rt_ecommerce, rt_purchase_revenue, 
-                    rt_transaction, tech_indexed, tech_404, tech_crawled_not_indexed, 
-                    tech_discovered_not_indexed, sc_date, ta_click, ta_impression, 
-                    ta_ctr, ta_position
-                )
-                pdf_bytes = HTML(string=pdf_html).write_pdf()
-                st.success("PDF generated successfully.")
-                st.download_button(
-                    label="📥 Click here to download the PDF",
-                    data=pdf_bytes,
-                    file_name=f"{agency_name.replace(' ', '_')}_SEO_Report.pdf",
-                    mime="application/pdf",
-                    use_container_width=True,
-                )
-            except Exception as e:
-                st.error(f"Could not generate PDF: {e}")
+    with st.spinner("Building your PDF report..."):
+        try:
+            pdf_html = build_pdf_html(
+                agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, sc_position, 
+                rt_visit, rt_revenue, rt_impression, rt_ecommerce, rt_purchase_revenue, 
+                rt_transaction, tech_indexed, tech_404, tech_crawled_not_indexed, 
+                tech_discovered_not_indexed, sc_date, ta_click, ta_impression, 
+                ta_ctr, ta_position
+            )
+            pdf_bytes = HTML(string=pdf_html).write_pdf()
+            st.success("PDF generated successfully.")
+            st.download_button(
+                label="📥 Click here to download the PDF",
+                data=pdf_bytes,
+                file_name=f"{agency_name.replace(' ', '_')}_SEO_Report.pdf",
                 mime="application/pdf",
                 use_container_width=True,
             )
         except Exception as e:
+            st.error(f"Could not generate PDF: {e}")
             st.error(f"Could not generate PDF: {e}")
