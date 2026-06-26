@@ -21,10 +21,13 @@ st.set_page_config(page_title="SEO Performance Report Generator", page_icon="�
 # এটি ২০ নম্বর লাইনের জায়গায় বসান (এর আগে কোনো স্পেস দেবেন না)
 st.markdown("""
 <style>
-    /* সাইডবার টেক্সট সাদা করার জন্য */
-    [data-testid="stSidebar"] * {
-        color: #f8fafc !important;
-    }
+   /* সাইডবার ডিজাইন */
+    [data-testid="stSidebar"] {{
+        background-color: #0f172a !important; 
+    }}
+    [data-testid="stSidebar"] * {{
+        color: #ffffff !important;
+    }}
     .stTextInput input, .stNumberInput input {
         color: black !important;
     }
