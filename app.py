@@ -212,8 +212,8 @@ sc_fig.update_layout(
     plot_bgcolor="white",
     paper_bgcolor="white",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
-    yaxis=dict(title="Clicks", titlefont=dict(color="#4285F4"), tickfont=dict(color="#4285F4")),
-    yaxis2=dict(title="Impressions", titlefont=dict(color="#8E24AA"), tickfont=dict(color="#8E24AA"),
+    yaxis=dict(title=dict(text="Clicks", font=dict(color="#4285F4")), tickfont=dict(color="#4285F4")),
+    yaxis2=dict(title=dict(text="Impressions", font=dict(color="#8E24AA")), tickfont=dict(color="#8E24AA"),
                 overlaying="y", side="right"),
     xaxis=dict(title=None),
 )
