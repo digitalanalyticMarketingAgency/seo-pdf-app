@@ -538,28 +538,62 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 <head>
 <meta charset="UTF-8">
 <style>
-    @page {{ size: A4; margin: 18mm 16mm; }}
-body {{ background-color: #ffffff; margin: 0; padding: 0; }}
-.main-container {{ padding: 30px; background-color: #ffffff; }}
-
-    .header-banner {{ 
+    /* ১. প্রিমিয়াম মডার্ন ফন্ট ফিক্স */
+    * { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; }
+    
+    body { background-color: #f8fafc; margin: 0; padding: 0; }
+    
+    /* ২. ফুটার ওভারল্যাপ ফিক্স (নিচে ১০০px ফাঁকা রাখা হয়েছে) */
+    .main-container { padding: 40px; padding-bottom: 100px; background-color: #f8fafc; }
+    
+    /* প্রিমিয়াম হেডার ডিজাইন */
+    .header-banner { 
         background-color: #0f172a; 
-        color: white; 
-        padding: 20px; 
+        color: #ffffff; 
+        padding: 40px 20px; 
         text-align: center; 
-        border-radius: 8px; 
-        margin-bottom: 30px; 
-    }}
-    .header-title {{ font-size: 24pt; font-weight: bold; margin: 0; text-transform: uppercase; }}
-    .header-subtitle {{ font-size: 11pt; color: #cbd5e1; margin-top: 5px; }}
-    .grid {{ width: 100%; border-collapse: separate; border-spacing: 10px 0; }}
-    .card {{ background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }}
-    .label {{ font-size: 8pt; font-weight: 700; color: #64748b; text-transform: uppercase; }}
-    .value {{ font-size: 18pt; font-weight: 800; margin-top: 4px; color: #0f172a; }}
-    .error-box {{ background-color: #fef2f2; border-left: 5px solid #ef4444; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-weight: 700; }}
-    .warn-box {{ background-color: #fffbeb; border-left: 5px solid #f59e0b; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-weight: 700; }}
-    .thankyou {{ text-align: center; padding: 60px 20px; }}
-    .footer {{ position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 10pt; color: #ffffff; background-color: #0f172a; padding: 15px 0; }}
+        border-radius: 16px; 
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+        margin-bottom: 50px; 
+    }
+    .header-title { font-size: 28pt; font-weight: 800; text-transform: uppercase; margin: 0; letter-spacing: 1px; }
+    .header-subtitle { font-size: 12pt; color: #94a3b8; margin-top: 10px; font-weight: 500; letter-spacing: 0.5px; }
+    
+    /* সেকশন হেডিং ও পেজ-ব্রেক ফিক্স (গাদাগাদি হবে না) */
+    h2 { 
+        font-size: 18pt; 
+        color: #0f172a; 
+        margin-top: 40px; 
+        margin-bottom: 20px; 
+        font-weight: 700;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 10px;
+        page-break-after: avoid; 
+    }
+    
+    /* গ্রিড ফিক্স */
+    .grid { width: 100%; border-collapse: separate; border-spacing: 15px 0; page-break-inside: avoid; margin-bottom: 30px; }
+    
+    /* প্রিমিয়াম ফ্লোটিং কার্ড (ওই NFT ডিজাইনের মতো ভাইব) */
+    .card { 
+        background-color: #ffffff; 
+        border: 1px solid #f1f5f9; 
+        border-radius: 16px; 
+        padding: 24px 15px; 
+        text-align: center; 
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); 
+        page-break-inside: avoid;
+    }
+    .label { font-size: 9pt; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .value { font-size: 22pt; font-weight: 800; color: #0f172a; }
+    
+    /* ফুটার ডিজাইন */
+    .footer { 
+        position: fixed; bottom: 0; left: 0; right: 0; 
+        text-align: center; font-size: 10pt; color: #ffffff; 
+        background-color: #0f172a; padding: 20px 0; 
+        font-weight: 500; letter-spacing: 0.5px;
+    }
 </style>
 </head>
 <body>
@@ -573,8 +607,8 @@ body {{ background-color: #ffffff; margin: 0; padding: 0; }}
 <h2>1. Search Console Performance ({sc_date})</h2>
 <table class="grid">
   <tr>
-    <td style="width:25%;"><div class="card"><div class="label">Total Clicks</div><div class="value" style="color:#4285F4;">{fmt_int(sc_clicks)}</div></div></td>
-    <td style="width:25%;"><div class="card"><div class="label">Total Impressions</div><div class="value" style="color:#8E24AA;">{fmt_int(sc_impressions)}</div></div></td>
+    <td style="width:25%;"><div class="card"><div class="label">Total Clicks</div><div class="value">{fmt_int(sc_clicks)}</div></div></td>
+    <td style="width:25%;"><div class="card"><div class="label">Total Impressions</div><div class="value">{fmt_int(sc_impressions)}</div></div></td>
     <td style="width:25%;"><div class="card"><div class="label">Average CTR</div><div class="value">{sc_ctr:.2f}%</div></div></td>
     <td style="width:25%;"><div class="card"><div class="label">Average Position</div><div class="value">{sc_position:.1f}</div></div></td>
   </tr>
