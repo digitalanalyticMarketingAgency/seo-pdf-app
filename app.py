@@ -22,93 +22,93 @@ st.set_page_config(page_title="SEO Performance Report Generator", page_icon="�
 st.markdown("""
 <style>
     /* সাইডবার টেক্সট সাদা করার জন্য */
-    [data-testid="stSidebar"] * {{
+    [data-testid="stSidebar"] * {
         color: #f8fafc !important;
-    }}
-    .stTextInput input, .stNumberInput input {{
+    }
+    .stTextInput input, .stNumberInput input {
         color: black !important;
-    }}
+    }
 
     /* Metric Cards */
-    .metric-card {{
+    .metric-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 14px;
         padding: 18px 20px;
         text-align: center;
-    }}
-    .metric-card .label {{
+    }
+    .metric-card .label {
         font-size: 11px;
         font-weight: 700;
         color: #64748b;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-    }}
-    .metric-card .value {{
+    }
+    .metric-card .value {
         font-size: 26px;
         font-weight: 800;
         color: #0f172a;
         margin-top: 6px;
-    }}
+    }
 
     /* Backlink Cards */
-    .backlink-card {{
+    .backlink-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 14px;
         padding: 16px;
         text-align: center;
         margin-bottom: 12px;
-    }}}}
-    .backlink-card .label {{
+    }
+    .backlink-card .label {
         font-size: 10px;
         font-weight: 700;
         color: #64748b;
         text-transform: uppercase;
-    }}
-    .backlink-card .value {{
+    }
+    .backlink-card .value {
         font-size: 20px;
         font-weight: 800;
         color: #0f172a;
-    }}
+    }
 
     /* Traffic Summary & Others */
-    .traffic-summary-label {{
+    .traffic-summary-label {
         font-size: 13px;
         color: #64748b;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-    }}
-    .traffic-summary-value {{
+    }
+    .traffic-summary-value {
         font-size: 40px;
         font-weight: 900;
         color: #0f172a;
         line-height: 1.2;
-    }}
-    .error-row {{
+    }
+    .error-row {
         background: #fef2f2;
         border-left: 5px solid #ef4444;
         border-radius: 8px;
         padding: 12px 16px;
         margin-bottom: 10px;
         font-weight: 600;
-    }}
-    .warn-row {{
+    }
+    .warn-row {
         background: #fffbeb;
         border-left: 5px solid #f59e0b;
         border-radius: 8px;
         padding: 12px 16px;
         margin-bottom: 10px;
         font-weight: 600;
-    }}
-    .thankyou-box {{
+    }
+    .thankyou-box {
         text-align: center;
         padding: 60px 20px;
-    }}
-    section[data-testid="stSidebar"] {{
+    }
+    section[data-testid="stSidebar"] {
         background-color: #0f172a;
-    }}
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -177,21 +177,21 @@ with st.sidebar:
 # HELPER FORMATTERS
 # ============================================================
 def fmt_int(v):
-    return f"{{int(v):,}}"
+    return f"{int(v):,}"
 
 
 def fmt_money(v):
-    return f"${{v:,.2f}}"
+    return f"${v:,.2f}"
 
 
 def fmt_compact(v):
     """Compact number formatting: 335300 -> 335.3K, 248800000 -> 248.8M"""
     v = float(v)
     if v >= 1_000_000:
-        return f"{{v / 1_000_000:.1f}}M"
+        return f"{v / 1_000_000:.1f}M"
     if v >= 1_000:
-        return f"{{v / 1_000:.1f}}K"
-    return f"{{v:.0f}}"
+        return f"{v / 1_000:.1f}K"
+    return f"{v:.0f}"
 
 
 # ============================================================
@@ -202,16 +202,16 @@ st.header("1. Search Console Performance")
 c1, c2, c3, c4 = st.columns(4)
 with c1:
     st.markdown(f"""<div class="metric-card"><div class="label">Total Clicks</div>
-    <div class="value">{{fmt_int(sc_clicks)}}</div></div>""", unsafe_allow_html=True)
+    <div class="value">{fmt_int(sc_clicks)}</div></div>""", unsafe_allow_html=True)
 with c2:
     st.markdown(f"""<div class="metric-card"><div class="label">Total Impressions</div>
-    <div class="value">{{fmt_int(sc_impressions)}}</div></div>""", unsafe_allow_html=True)
+    <div class="value">{fmt_int(sc_impressions)}</div></div>""", unsafe_allow_html=True)
 with c3:
     st.markdown(f"""<div class="metric-card"><div class="label">Average CTR</div>
-    <div class="value">{{sc_ctr:.2f}}%</div></div>""", unsafe_allow_html=True)
+    <div class="value">{sc_ctr:.2f}%</div></div>""", unsafe_allow_html=True)
 with c4:
     st.markdown(f"""<div class="metric-card"><div class="label">Average Position</div>
-    <div class="value">{{sc_position:.1f}}</div></div>""", unsafe_allow_html=True)
+    <div class="value">{sc_position:.1f}</div></div>""", unsafe_allow_html=True)
 
 st.write("")
 
@@ -280,22 +280,22 @@ r2c1, r2c2, r2c3 = st.columns(3)
 
 with r1c1:
     st.markdown(f"""<div class="metric-card">🧑‍💻<div class="label">Visit</div>
-    <div class="value">{{fmt_int(rt_visit)}}</div></div>""", unsafe_allow_html=True)
+    <div class="value">{fmt_int(rt_visit)}</div></div>""", unsafe_allow_html=True)
 with r1c2:
     st.markdown(f"""<div class="metric-card">💵<div class="label">Total Revenue</div>
-    <div class="value">{{fmt_money(rt_revenue)}}</div></div>""", unsafe_allow_html=True)
+    <div class="value">{fmt_money(rt_revenue)}</div></div>""", unsafe_allow_html=True)
 with r1c3:
     st.markdown(f"""<div class="metric-card">👁️<div class="label">Impression</div>
-    <div class="value">{{fmt_int(rt_impression)}}</div></div>""", unsafe_allow_html=True)
+    <div class="value">{fmt_int(rt_impression)}</div></div>""", unsafe_allow_html=True)
 with r2c1:
     st.markdown(f"""<div class="metric-card">🛒<div class="label">Ecommerce Purchases</div>
-    <div class="value">{{fmt_int(rt_ecommerce)}}</div></div>""", unsafe_allow_html=True)
+    <div class="value">{fmt_int(rt_ecommerce)}</div></div>""", unsafe_allow_html=True)
 with r2c2:
     st.markdown(f"""<div class="metric-card">💰<div class="label">Purchases Revenue</div>
-    <div class="value">{{fmt_money(rt_purchase_revenue)}}</div></div>""", unsafe_allow_html=True)
+    <div class="value">{fmt_money(rt_purchase_revenue)}</div></div>""", unsafe_allow_html=True)
 with r2c3:
     st.markdown(f"""<div class="metric-card">🧾<div class="label">Transaction</div>
-    <div class="value">{{fmt_int(rt_transaction)}}</div></div>""", unsafe_allow_html=True)
+    <div class="value">{fmt_int(rt_transaction)}</div></div>""", unsafe_allow_html=True)
 
 st.divider()
 
@@ -343,8 +343,8 @@ with bl_col1:
     card_cols = st.columns(2)
     for i, (label, value) in enumerate(zip(bl_labels, bl_values)):
         with card_cols[i % 2]:
-            st.markdown(f"""<div class="backlink-card"><div class="label">{{label}}</div>
-            <div class="value">{{fmt_compact(value)}}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="backlink-card"><div class="label">{label}</div>
+            <div class="value">{fmt_compact(value)}</div></div>""", unsafe_allow_html=True)
 
 with bl_col2:
     donut_fig = go.Figure(go.Pie(
@@ -371,16 +371,16 @@ st.header("5. Traffic Analytics Summary")
 ta_col1, ta_col2, ta_col3, ta_col4 = st.columns(4)
 with ta_col1:
     st.markdown(f"""<div class="traffic-summary-label">Click</div>
-    <div class="traffic-summary-value">{{fmt_compact(ta_click)}}</div>""", unsafe_allow_html=True)
+    <div class="traffic-summary-value">{fmt_compact(ta_click)}</div>""", unsafe_allow_html=True)
 with ta_col2:
     st.markdown(f"""<div class="traffic-summary-label">Total Impression</div>
-    <div class="traffic-summary-value">{{fmt_compact(ta_impression)}}</div>""", unsafe_allow_html=True)
+    <div class="traffic-summary-value">{fmt_compact(ta_impression)}</div>""", unsafe_allow_html=True)
 with ta_col3:
     st.markdown(f"""<div class="traffic-summary-label">CTR</div>
-    <div class="traffic-summary-value">{{ta_ctr:.2f}}%</div>""", unsafe_allow_html=True)
+    <div class="traffic-summary-value">{ta_ctr:.2f}%</div>""", unsafe_allow_html=True)
 with ta_col4:
     st.markdown(f"""<div class="traffic-summary-label">Average Position</div>
-    <div class="traffic-summary-value">{{ta_position:.2f}}</div>""", unsafe_allow_html=True)
+    <div class="traffic-summary-value">{ta_position:.2f}</div>""", unsafe_allow_html=True)
 
 st.divider()
 
@@ -395,23 +395,23 @@ with tech_col1:
     gauge_fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=tech_indexed,
-        number={{"font": {{"size": 36, "color": "#16a34a"}}}},
-        title={{"text": "Indexed Pages (Valid)", "font": {{"size": 14}}}},
-        gauge={{
-            "axis": {{"range": [0, max(tech_indexed * 1.2, 1)], "visible": False}},
-            "bar": {{"color": "#16a34a"}},
+        number={"font": {"size": 36, "color": "#16a34a"}},
+        title={"text": "Indexed Pages (Valid)", "font": {"size": 14}},
+        gauge={
+            "axis": {"range": [0, max(tech_indexed * 1.2, 1)], "visible": False},
+            "bar": {"color": "#16a34a"},
             "bgcolor": "#f1f5f9",
             "borderwidth": 0,
-        }}
+        }
     ))
     gauge_fig.update_layout(height=260, margin=dict(l=20, r=20, t=40, b=10))
     st.plotly_chart(gauge_fig, use_container_width=True)
 
 with tech_col2:
     st.markdown("**Errors & Warnings**")
-    st.markdown(f"""<div class="error-row">🔴 Not Found (404): <b>{{fmt_int(tech_404)}}</b> pages</div>""", unsafe_allow_html=True)
-    st.markdown(f"""<div class="warn-row">🟠 Crawled — Currently Not Indexed: <b>{{fmt_int(tech_crawled_not_indexed)}}</b> pages</div>""", unsafe_allow_html=True)
-    st.markdown(f"""<div class="warn-row">🟠 Discovered — Currently Not Indexed: <b>{{fmt_int(tech_discovered_not_indexed)}}</b> pages</div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="error-row">🔴 Not Found (404): <b>{fmt_int(tech_404)}</b> pages</div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="warn-row">🟠 Crawled — Currently Not Indexed: <b>{fmt_int(tech_crawled_not_indexed)}</b> pages</div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="warn-row">🟠 Discovered — Currently Not Indexed: <b>{fmt_int(tech_discovered_not_indexed)}</b> pages</div>""", unsafe_allow_html=True)
 
 st.divider()
 
@@ -443,7 +443,7 @@ def fig_to_base64(fig, width=700, height=300):
     """Convert a Plotly figure to a base64-encoded PNG for PDF embedding."""
     img_bytes = pio.to_image(fig, format="png", width=width, height=height, scale=2)
     b64 = base64.b64encode(img_bytes).decode("utf-8")
-    return f'<img src="data:image/png;base64,{{b64}}" style="width:100%; border-radius:8px;" />'
+    return f'<img src="data:image/png;base64,{b64}" style="width:100%; border-radius:8px;" />'
 def build_kw_bar_html():
     max_kw = max(kw_values) if max(kw_values) > 0 else 1
     rows = ""
@@ -451,15 +451,15 @@ def build_kw_bar_html():
         width_pct = int((value / max_kw) * 100)
         rows += f"""
         <tr>
-          <td style="width:90px; font-size:9pt; font-weight:700; color:#64748b;">{{label}}</td>
+          <td style="width:90px; font-size:9pt; font-weight:700; color:#64748b;">{label}</td>
           <td>
             <div style="background:#f1f5f9; border-radius:4px; height:12px; width:100%;">
-              <div style="background:{{color}}; border-radius:4px; height:12px; width:{{width_pct}}%;"></div>
+              <div style="background:{color}; border-radius:4px; height:12px; width:{width_pct}%;"></div>
             </div>
           </td>
-          <td style="width:40px; text-align:right; font-weight:800; font-size:10pt;">{{value}}</td>
+          <td style="width:40px; text-align:right; font-weight:800; font-size:10pt;">{value}</td>
         </tr>"""
-    return f'<table style="width:100%; border-collapse:collapse;">{{rows}}</table>'
+    return f'<table style="width:100%; border-collapse:collapse;">{rows}</table>'
 
 
 def build_backlink_rows_html():
@@ -467,10 +467,10 @@ def build_backlink_rows_html():
     for label, value in zip(bl_labels, bl_values):
         rows += f"""
         <tr>
-          <td style="padding:6px 0;">{{label}}</td>
-          <td style="padding:6px 0; text-align:right; font-weight:800;">{{fmt_compact(value)}}</td>
+          <td style="padding:6px 0;">{label}</td>
+          <td style="padding:6px 0; text-align:right; font-weight:800;">{fmt_compact(value)}</td>
         </tr>"""
-    return f'<table style="width:100%; border-collapse:collapse; font-size:11pt;">{{rows}}</table>'
+    return f'<table style="width:100%; border-collapse:collapse; font-size:11pt;">{rows}</table>'
 
 
 # আগের লাইনটি ডিলিট করে এটি বসান:
@@ -530,37 +530,37 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 <head>
 <meta charset="UTF-8">
 <style>
-    .header-banner {{{{ 
+    .header-banner {{ 
         background-color: #0f172a; 
         color: white; 
         padding: 20px; 
         text-align: center; 
         border-radius: 8px; 
         margin-bottom: 30px; 
-    }}}}
-    .header-title {{{{ font-size: 24pt; font-weight: bold; margin: 0; text-transform: uppercase; }}}}
-    .header-subtitle {{{{ font-size: 11pt; color: #cbd5e1; margin-top: 5px; }}}}
-    @page {{{{ size: A4; margin: 18mm 16mm; }}}}
-    body {{ background-color: #0f172a; padding: 30px 10px; }}
-    .main-container {{{{ 
+    }}
+    .header-title {{ font-size: 24pt; font-weight: bold; margin: 0; text-transform: uppercase; }}
+    .header-subtitle {{ font-size: 11pt; color: #cbd5e1; margin-top: 5px; }}
+    @page {{ size: A4; margin: 18mm 16mm; }}
+    body { background-color: #0f172a; padding: 30px 10px; }
+    .main-container {{ 
         background-color: #ffffff; 
         max-width: 800px; 
         margin: 0 auto; 
         padding: 40px; 
         border-radius: 16px; 
         box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
-    }}}}
-    h1 {{{{ font-size: 22pt; margin-bottom: 2px; }}}}
-    h2 {{{{ font-size: 14pt; border-bottom: 3px solid #2563eb; padding-bottom: 6px; margin-top: 28px; text-transform: uppercase; letter-spacing: 0.5px; }}}}
-    .sub {{{{ color: #64748b; font-size: 11pt; margin-bottom: 20px; }}}}
-    .grid {{{{ width: 100%; border-collapse: separate; border-spacing: 10px 0; }}}}
-    .card {{{{ background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center; }}}}
-    .card .label {{{{ font-size: 8pt; font-weight: 700; color: #64748b; text-transform: uppercase; }}}}
-    .card .value {{{{ font-size: 18pt; font-weight: 800; margin-top: 4px; }}}}
-    .error-box {{{{ background:#fef2f2; border-left:5px solid #ef4444; border-radius:8px; padding:10px 14px; margin-bottom:8px; font-weight:700; }}}}
-    .warn-box  {{{{ background:#fffbeb; border-left:5px solid #f59e0b; border-radius:8px; padding:10px 14px; margin-bottom:8px; font-weight:700; }}}}
-    .thankyou {{{{ text-align:center; padding: 60px 20px; }}}}
-    .footer {{{{ position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 8pt; color: #94a3b8; border-top: 1px solid #e2e8f0; padding: 10px 0; }}}}
+    }}
+    h1 {{ font-size: 22pt; margin-bottom: 2px; }}
+    h2 {{ font-size: 14pt; border-bottom: 3px solid #2563eb; padding-bottom: 6px; margin-top: 28px; text-transform: uppercase; letter-spacing: 0.5px; }}
+    .sub {{ color: #64748b; font-size: 11pt; margin-bottom: 20px; }}
+    .grid {{ width: 100%; border-collapse: separate; border-spacing: 10px 0; }}
+    .card {{ background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center; }}
+    .card .label {{ font-size: 8pt; font-weight: 700; color: #64748b; text-transform: uppercase; }}
+    .card .value {{ font-size: 18pt; font-weight: 800; margin-top: 4px; }}
+    .error-box {{ background:#fef2f2; border-left:5px solid #ef4444; border-radius:8px; padding:10px 14px; margin-bottom:8px; font-weight:700; }}
+    .warn-box  {{ background:#fffbeb; border-left:5px solid #f59e0b; border-radius:8px; padding:10px 14px; margin-bottom:8px; font-weight:700; }}
+    .thankyou {{ text-align:center; padding: 60px 20px; }}
+    .footer {{ position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 8pt; color: #94a3b8; border-top: 1px solid #e2e8f0; padding: 10px 0; }}
 </style>
 </head>
 <body>
@@ -568,54 +568,54 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 
 <div class="header-banner">
     <div class="header-title">SEO Performance Report</div>
-    <div class="header-subtitle">{{agency_name}} &nbsp;|&nbsp; {{report_date}}</div>
+    <div class="header-subtitle">{agency_name} &nbsp;|&nbsp; {report_date}</div>
 </div>
 
-<h2>1. Search Console Performance ({{sc_date}})</h2>
+<h2>1. Search Console Performance ({sc_date})</h2>
 <table class="grid">
   <tr>
-    <td style="width:25%;"><div class="card"><div class="label">Total Clicks</div><div class="value" style="color:#4285F4;">{{fmt_int(sc_clicks)}}</div></div></td>
-    <td style="width:25%;"><div class="card"><div class="label">Total Impressions</div><div class="value" style="color:#8E24AA;">{{fmt_int(sc_impressions)}}</div></div></td>
-    <td style="width:25%;"><div class="card"><div class="label">Average CTR</div><div class="value">{{sc_ctr:.2f}}%</div></div></td>
-    <td style="width:25%;"><div class="card"><div class="label">Average Position</div><div class="value">{{sc_position:.1f}}</div></div></td>
+    <td style="width:25%;"><div class="card"><div class="label">Total Clicks</div><div class="value" style="color:#4285F4;">{fmt_int(sc_clicks)}</div></div></td>
+    <td style="width:25%;"><div class="card"><div class="label">Total Impressions</div><div class="value" style="color:#8E24AA;">{fmt_int(sc_impressions)}</div></div></td>
+    <td style="width:25%;"><div class="card"><div class="label">Average CTR</div><div class="value">{sc_ctr:.2f}%</div></div></td>
+    <td style="width:25%;"><div class="card"><div class="label">Average Position</div><div class="value">{sc_position:.1f}</div></div></td>
   </tr>
 </table>
-<div style="margin-top:12px;">{{sc_chart_html}}</div>
+<div style="margin-top:12px;">{sc_chart_html}</div>
 
 <h2>2. Revenue & Traffic Dashboard</h2>
 <table class="grid">
   <tr>
-    <td style="width:33%;"><div class="card"><div class="label">Visit</div><div class="value">{{fmt_int(rt_visit)}}</div></div></td>
-    <td style="width:33%;"><div class="card"><div class="label">Total Revenue</div><div class="value">{{fmt_money(rt_revenue)}}</div></div></td>
-    <td style="width:33%;"><div class="card"><div class="label">Impression</div><div class="value">{{fmt_int(rt_impression)}}</div></div></td>
+    <td style="width:33%;"><div class="card"><div class="label">Visit</div><div class="value">{fmt_int(rt_visit)}</div></div></td>
+    <td style="width:33%;"><div class="card"><div class="label">Total Revenue</div><div class="value">{fmt_money(rt_revenue)}</div></div></td>
+    <td style="width:33%;"><div class="card"><div class="label">Impression</div><div class="value">{fmt_int(rt_impression)}</div></div></td>
   </tr>
   <tr>
-    <td style="width:33%;"><div class="card"><div class="label">Ecommerce Purchases</div><div class="value">{{fmt_int(rt_ecommerce)}}</div></div></td>
-    <td style="width:33%;"><div class="card"><div class="label">Purchases Revenue</div><div class="value">{{fmt_money(rt_purchase_revenue)}}</div></div></td>
-    <td style="width:33%;"><div class="card"><div class="label">Transaction</div><div class="value">{{fmt_int(rt_transaction)}}</div></div></td>
+    <td style="width:33%;"><div class="card"><div class="label">Ecommerce Purchases</div><div class="value">{fmt_int(rt_ecommerce)}</div></div></td>
+    <td style="width:33%;"><div class="card"><div class="label">Purchases Revenue</div><div class="value">{fmt_money(rt_purchase_revenue)}</div></div></td>
+    <td style="width:33%;"><div class="card"><div class="label">Transaction</div><div class="value">{fmt_int(rt_transaction)}</div></div></td>
   </tr>
 </table>
 
 <h2>3. Top Keyword Ranking Distribution</h2>
-{{kw_chart_html}}
-{{kw_bars_html}}
+{kw_chart_html}
+{kw_bars_html}
 
 <h2>4. Backlink Profile</h2>
 <table style="width:100%; border-collapse:collapse;">
   <tr>
-    <td style="width:48%; vertical-align:top;">{{backlink_rows_html}}</td>
+    <td style="width:48%; vertical-align:top;">{backlink_rows_html}</td>
     <td style="width:4%;"></td>
-    <td style="width:48%; vertical-align:top;">{{bl_chart_html}}</td>
+    <td style="width:48%; vertical-align:top;">{bl_chart_html}</td>
   </tr>
 </table>
 
 <h2>5. Traffic Analytics Summary</h2>
 <table class="grid">
   <tr>
-    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">CLICK</div><div style="font-size:20pt; font-weight:900;">{{fmt_compact(ta_click)}}</div></td>
-    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">TOTAL IMPRESSION</div><div style="font-size:20pt; font-weight:900;">{{fmt_compact(ta_impression)}}</div></td>
-    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">CTR</div><div style="font-size:20pt; font-weight:900;">{{ta_ctr:.2f}}%</div></td>
-    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">AVG POSITION</div><div style="font-size:20pt; font-weight:900;">{{ta_position:.2f}}</div></td>
+    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">CLICK</div><div style="font-size:20pt; font-weight:900;">{fmt_compact(ta_click)}</div></td>
+    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">TOTAL IMPRESSION</div><div style="font-size:20pt; font-weight:900;">{fmt_compact(ta_impression)}</div></td>
+    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">CTR</div><div style="font-size:20pt; font-weight:900;">{ta_ctr:.2f}%</div></td>
+    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">AVG POSITION</div><div style="font-size:20pt; font-weight:900;">{ta_position:.2f}</div></td>
   </tr>
 </table>
 
@@ -625,13 +625,13 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     <td style="width:35%;">
       <div class="card" style="padding:24px;">
         <div class="label">Indexed Pages (Valid)</div>
-        <div class="value" style="color:#16a34a; font-size:26pt;">{{fmt_int(tech_indexed)}}</div>
+        <div class="value" style="color:#16a34a; font-size:26pt;">{fmt_int(tech_indexed)}</div>
       </div>
     </td>
     <td style="width:65%; vertical-align:top;">
-      <div class="error-box">Not Found (404): {{fmt_int(tech_404)}} pages</div>
-      <div class="warn-box">Crawled — Not Indexed: {{fmt_int(tech_crawled_not_indexed)}} pages</div>
-      <div class="warn-box">Discovered — Not Indexed: {{fmt_int(tech_discovered_not_indexed)}} pages</div>
+      <div class="error-box">Not Found (404): {fmt_int(tech_404)} pages</div>
+      <div class="warn-box">Crawled — Not Indexed: {fmt_int(tech_crawled_not_indexed)} pages</div>
+      <div class="warn-box">Discovered — Not Indexed: {fmt_int(tech_discovered_not_indexed)} pages</div>
     </td>
   </tr>
 </table>
@@ -644,7 +644,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     continuous digital growth, optimizing your web presence, and ensuring top-tier search engine rankings
     for your business. Should you have any questions, please feel free to reach out to us.
   </p>
-  <p style="margin-top:40px; color:#94a3b8; font-size:11pt;">{{agency_name}} &nbsp;|&nbsp; {{report_date}}</p>
+  <p style="margin-top:40px; color:#94a3b8; font-size:11pt;">{agency_name} &nbsp;|&nbsp; {report_date}</p>
 </div>
 
 <!-- লাইন ৬৩৯ এর পর কন্টেন্ট শেষ হবে -->
@@ -671,10 +671,10 @@ if st.button("Download as PDF", type="primary", use_container_width=True):
             st.download_button(
                 label="📥 Click here to download the PDF",
                 data=pdf_bytes,
-                file_name=f"{{agency_name.replace(' ', '_')}}_SEO_Report.pdf",
+                file_name=f"{agency_name.replace(' ', '_')}_SEO_Report.pdf",
                 mime="application/pdf",
                 use_container_width=True,
             )
         except Exception as e:
-            st.error(f"Could not generate PDF: {{e}}")
-            st.error(f"Could not generate PDF: {{e}}")
+            st.error(f"Could not generate PDF: {e}")
+            st.error(f"Could not generate PDF: {e}")
