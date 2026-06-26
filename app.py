@@ -18,6 +18,7 @@ st.set_page_config(page_title="SEO Performance Report Generator", page_icon="�
 # ============================================================
 # CUSTOM CSS
 # ============================================================
+# এটি ২০ নম্বর লাইনের জায়গায় বসান (এর আগে কোনো স্পেস দেবেন না)
 st.markdown("""
 <style>
     /* সাইডবার টেক্সট সাদা করার জন্য */
@@ -70,19 +71,8 @@ st.markdown("""
         font-weight: 800;
         color: #0f172a;
     }
-</style>
-""", unsafe_allow_html=True)
-    .backlink-card .label {
-        font-size: 10px;
-        font-weight: 700;
-        color: #64748b;
-        text-transform: uppercase;
-    }
-    .backlink-card .value {
-        font-size: 20px;
-        font-weight: 800;
-        color: #0f172a;
-    }
+
+    /* Traffic Summary & Others */
     .traffic-summary-label {
         font-size: 13px;
         color: #64748b;
