@@ -23,13 +23,11 @@ st.markdown("""
     [data-testid="stSidebar"] * {
         color: #f8fafc !important;
     }
-
-    /* ইনপুট বক্সের টেক্সট কালো করার জন্য */
     .stTextInput input, .stNumberInput input {
         color: black !important;
     }
 
-    /* অন্যান্য স্টাইল */
+    /* Metric Cards */
     .metric-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -50,8 +48,8 @@ st.markdown("""
         color: #0f172a;
         margin-top: 6px;
     }
-</style>
-""", unsafe_allow_html=True)
+
+    /* Backlink Cards */
     .backlink-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -60,6 +58,19 @@ st.markdown("""
         text-align: center;
         margin-bottom: 12px;
     }
+    .backlink-card .label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+    }
+    .backlink-card .value {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+    }
+</style>
+""", unsafe_allow_html=True)
     .backlink-card .label {
         font-size: 10px;
         font-weight: 700;
