@@ -5,6 +5,12 @@ import datetime
 import random
 import base64
 from weasyprint import HTML
+import base64
+from weasyprint import HTML
+
+agency_name = "Digital Analytic"  # এই লাইনটি এখানে বসান
+
+st.set_page_config(page_title="SEO Performance Report Generator", page_icon="📈", layout="wide")
 
 st.set_page_config(page_title="SEO Performance Report Generator", page_icon="📈", layout="wide")
 
@@ -407,7 +413,10 @@ st.markdown(f"""
         for your business. Should you have any questions, please feel free to reach out to us.
     </p>
     <p style="margin-top:30px; color:#94a3b8; font-size:13px;">
-        {agency_name} &nbsp;|&nbsp; {report_date}
+        # ৪১০ নম্বর লাইনের কোডটি মুছে ফেলে এটি বসান:
+    <p style="margin-top:30px; color:#94a3b8; font-size:13px;">
+        Digital Analytic &nbsp;|&nbsp; {report_date}
+    </p>
     </p>
 </div>
 """, unsafe_allow_html=True)
