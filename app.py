@@ -541,7 +541,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     .header-title {{ font-size: 24pt; font-weight: bold; margin: 0; text-transform: uppercase; }}
     .header-subtitle {{ font-size: 11pt; color: #cbd5e1; margin-top: 5px; }}
     @page {{ size: A4; margin: 18mm 16mm; }}
-    body {{ font-family: Helvetica, Arial, sans-serif; color: #0f172a; }}
+    body {{ font-family: Helvetica, Arial, sans-serif; color: #0f172a; background-color: #f8fafc; padding: 20px; }}
     h1 {{ font-size: 22pt; margin-bottom: 2px; }}
     h2 {{ font-size: 14pt; border-bottom: 3px solid #2563eb; padding-bottom: 6px; margin-top: 28px; text-transform: uppercase; letter-spacing: 0.5px; }}
     .sub {{ color: #64748b; font-size: 11pt; margin-bottom: 20px; }}
