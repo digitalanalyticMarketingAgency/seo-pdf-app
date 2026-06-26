@@ -30,85 +30,85 @@ st.markdown("""
     }
 
     /* Metric Cards */
-    .metric-card {
+    .metric-card {{
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 14px;
         padding: 18px 20px;
         text-align: center;
-    }
-    .metric-card .label {
+    }}
+    .metric-card .label {{
         font-size: 11px;
         font-weight: 700;
         color: #64748b;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-    }
-    .metric-card .value {
+    }}
+    .metric-card .value {{
         font-size: 26px;
         font-weight: 800;
         color: #0f172a;
         margin-top: 6px;
-    }
+    }}
 
     /* Backlink Cards */
-    .backlink-card {
+    .backlink-card {{
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 14px;
         padding: 16px;
         text-align: center;
         margin-bottom: 12px;
-    }
-    .backlink-card .label {
+    }}
+    .backlink-card .label {{
         font-size: 10px;
         font-weight: 700;
         color: #64748b;
         text-transform: uppercase;
-    }
-    .backlink-card .value {
+    }}
+    .backlink-card .value {{
         font-size: 20px;
         font-weight: 800;
         color: #0f172a;
-    }
+    }}
 
     /* Traffic Summary & Others */
-    .traffic-summary-label {
+    .traffic-summary-label {{
         font-size: 13px;
         color: #64748b;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-    }
-    .traffic-summary-value {
+    }}
+    .traffic-summary-value {{
         font-size: 40px;
         font-weight: 900;
         color: #0f172a;
         line-height: 1.2;
-    }
-    .error-row {
+    }}
+    .error-row {{
         background: #fef2f2;
         border-left: 5px solid #ef4444;
         border-radius: 8px;
         padding: 12px 16px;
         margin-bottom: 10px;
         font-weight: 600;
-    }
-    .warn-row {
+    }}
+    .warn-row {{
         background: #fffbeb;
         border-left: 5px solid #f59e0b;
         border-radius: 8px;
         padding: 12px 16px;
         margin-bottom: 10px;
         font-weight: 600;
-    }
-    .thankyou-box {
+    }}
+    .thankyou-box {{
         text-align: center;
         padding: 60px 20px;
-    }
-    section[data-testid="stSidebar"] {
+    }}
+    section[data-testid="stSidebar"] {{
         background-color: #0f172a;
-    }
+    }}
 </style>
 """, unsafe_allow_html=True)
 
