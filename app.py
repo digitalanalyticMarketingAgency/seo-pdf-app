@@ -541,7 +541,15 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     .header-title {{ font-size: 24pt; font-weight: bold; margin: 0; text-transform: uppercase; }}
     .header-subtitle {{ font-size: 11pt; color: #cbd5e1; margin-top: 5px; }}
     @page {{ size: A4; margin: 18mm 16mm; }}
-    body {{ font-family: Helvetica, Arial, sans-serif; color: #0f172a; background-color: #f8fafc; padding: 20px; }}
+    body { background-color: #0f172a; padding: 30px 10px; }
+    .main-container { 
+        background-color: #ffffff; 
+        max-width: 800px; 
+        margin: 0 auto; 
+        padding: 40px; 
+        border-radius: 16px; 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
+    }
     h1 {{ font-size: 22pt; margin-bottom: 2px; }}
     h2 {{ font-size: 14pt; border-bottom: 3px solid #2563eb; padding-bottom: 6px; margin-top: 28px; text-transform: uppercase; letter-spacing: 0.5px; }}
     .sub {{ color: #64748b; font-size: 11pt; margin-bottom: 20px; }}
@@ -556,6 +564,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 </style>
 </head>
 <body>
+<div class="main-container">
 
 <div class="header-banner">
     <div class="header-title">SEO Performance Report</div>
@@ -638,7 +647,10 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
   <p style="margin-top:40px; color:#94a3b8; font-size:11pt;">{agency_name} &nbsp;|&nbsp; {report_date}</p>
 </div>
 
-<div class="footer">Digital Analytic | www.digital-analytic.com</div>
+<!-- লাইন ৬৩৯ এর পর কন্টেন্ট শেষ হবে -->
+</div> <!-- এই </div> টি কন্টেইনার ক্লোজ করবে (লাইন ৬৪০) -->
+
+<div class="footer">Digital Analytic | www.digital-analytic.com</div> <!-- এরপর আপনার ফুটার থাকবে (লাইন ৬৪১) -->
 </body>
 </html>"""
 
