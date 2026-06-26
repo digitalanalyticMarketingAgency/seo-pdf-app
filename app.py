@@ -5,6 +5,7 @@ import datetime
 import random
 import base64
 from weasyprint import HTML
+agency_name = "Digital Analytic"
 import base64
 from weasyprint import HTML
 
