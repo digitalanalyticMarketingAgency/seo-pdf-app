@@ -64,6 +64,16 @@ with st.expander("🛠️ 6. Technical SEO"):
     tech_crawl = col1.text_input("Crawled - Not Indexed", value="42")
     tech_disc = col2.text_input("Discovered - Not Indexed", value="18")
 
+# Function to safely convert arrows to cross-platform HTML entities
+def format_growth(val):
+    if '▼' in val:
+        parts = val.split('▼')
+        return f"{parts[0]} <span style='color:#ef4444; font-size:12pt;'>&darr;</span><span style='color:#ef4444;'>{parts[1]}</span>"
+    elif '▲' in val:
+        parts = val.split('▲')
+        return f"{parts[0]} <span style='color:#22c55e; font-size:12pt;'>&uarr;</span><span style='color:#22c55e;'>{parts[1]}</span>"
+    return val
+
 # --- HTML TEMPLATE (PREMIUM HEAVY DESIGN) ---
 html_template = f"""
 <!DOCTYPE html>
@@ -86,7 +96,7 @@ html_template = f"""
         padding: 25px 40px;
     }}
     .header {{
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        background: #081426;
         color: white;
         padding: 40px 40px;
         border-bottom: 8px solid #16a34a;
@@ -130,12 +140,20 @@ html_template = f"""
     .card-dark .metric-title {{ color: #94a3b8; }}
     .metric-value {{ font-size: 18pt; font-weight: 900; margin-top: 5px; color: #0f172a; }}
     .card-dark .metric-value {{ color: white; }}
-    .bar-bg {{ background: #e2e8f0; height: 12px; border-radius: 6px; width: 100%; margin-top: 5px; }}
-    .bar-fill-1 {{ background: linear-gradient(90deg, #2563eb, #3b82f6); height: 100%; border-radius: 6px; width: 85%; }}
-    .bar-fill-2 {{ background: linear-gradient(90deg, #16a34a, #22c55e); height: 100%; border-radius: 6px; width: 65%; }}
-    .bar-fill-3 {{ background: linear-gradient(90deg, #8b5cf6, #a855f7); height: 100%; border-radius: 6px; width: 45%; }}
+    
+    /* Progress Bars */
+    .bar-bg {{ background: #e2e8f0; height: 10px; border-radius: 5px; width: 100%; margin-top: 6px; }}
+    .bar-fill-1 {{ background: linear-gradient(90deg, #2563eb, #3b82f6); height: 100%; border-radius: 5px; width: 85%; }}
+    .bar-fill-2 {{ background: linear-gradient(90deg, #16a34a, #22c55e); height: 100%; border-radius: 5px; width: 65%; }}
+    .bar-fill-3 {{ background: linear-gradient(90deg, #8b5cf6, #a855f7); height: 100%; border-radius: 5px; width: 45%; }}
+    .bar-fill-4 {{ background: linear-gradient(90deg, #ec4899, #f472b6); height: 100%; border-radius: 5px; width: 25%; }}
+    .bar-fill-5 {{ background: linear-gradient(90deg, #f43f5e, #fb7185); height: 100%; border-radius: 5px; width: 15%; }}
+    
+    /* Issue Boxes */
     .error-box {{ background: #fee2e2; border-left: 5px solid #ef4444; padding: 12px 15px; margin-bottom: 10px; border-radius: 0 8px 8px 0; }}
     .warn-box {{ background: #fef3c7; border-left: 5px solid #f59e0b; padding: 12px 15px; margin-bottom: 10px; border-radius: 0 8px 8px 0; }}
+    .notice-box {{ background: #eff6ff; border-left: 5px solid #3b82f6; padding: 12px 15px; margin-bottom: 10px; border-radius: 0 8px 8px 0; color: #1e3a8a; }}
+    
     .footer-box {{
         background: #0f172a; color: white; text-align: center; padding: 50px 30px; margin-top: 40px;
         border-top: 8px solid #2563eb; page-break-inside: avoid;
@@ -154,6 +172,7 @@ html_template = f"""
     </div>
 
     <div class="container">
+        <!-- Section 1 -->
         <div class="section-title">1. Search Console Performance</div>
         <table class="grid">
             <tr>
@@ -165,7 +184,13 @@ html_template = f"""
         </table>
         
         <div class="card" style="padding: 25px; margin-top: -5px;">
-            <div style="font-size: 9pt; font-weight: bold; color:#64748b; margin-bottom: 15px;">PERFORMANCE TREND (30 DAYS)</div>
+            <div style="font-size: 9pt; font-weight: bold; color:#64748b; margin-bottom: 15px;">
+                PERFORMANCE TREND (30 DAYS)
+                <span style="float:right;">
+                    <span style="color:#2563eb; font-size: 14pt; line-height: 0;">&bull;</span> Clicks &nbsp;&nbsp;&nbsp;
+                    <span style="color:#8b5cf6; font-size: 14pt; line-height: 0;">&bull;</span> Impressions
+                </span>
+            </div>
             <svg width="100%" height="120" viewBox="0 0 700 120" preserveAspectRatio="none">
                 <line x1="0" y1="20" x2="700" y2="20" stroke="#f1f5f9" stroke-width="2"/>
                 <line x1="0" y1="60" x2="700" y2="60" stroke="#f1f5f9" stroke-width="2"/>
@@ -177,51 +202,63 @@ html_template = f"""
             </svg>
         </div>
 
+        <!-- Section 2 -->
         <div class="section-title">2. Revenue & Traffic Dashboard</div>
         <table class="grid">
             <tr>
                 <td style="width:33%"><div class="card"><div class="metric-title">Conversions</div><div class="metric-value">{rev_conv}</div></div></td>
                 <td style="width:33%"><div class="card"><div class="metric-title">Total Revenue</div><div class="metric-value" style="color:#16a34a;">{rev_total}</div></div></td>
+                <td style="width:33%"><div class="card"><div class="metric-title">Event / Impression</div><div class="metric-value">{rev_imp}</div></div></td>
+            </tr>
+            <tr>
+                <td style="width:33%"><div class="card"><div class="metric-title">Ecommerce Purchases</div><div class="metric-value">{rev_ecom}</div></div></td>
+                <td style="width:33%"><div class="card"><div class="metric-title">Purchase Revenue</div><div class="metric-value" style="color:#16a34a;">{rev_pur_rev}</div></div></td>
                 <td style="width:33%"><div class="card"><div class="metric-title">Transactions</div><div class="metric-value">{rev_trans}</div></div></td>
             </tr>
         </table>
 
+        <!-- Section 3 & 4 -->
         <table class="grid">
             <tr>
                 <td style="width:50%;">
                     <div class="section-title" style="margin-top:10px;">3. Keyword Spread</div>
-                    <div class="card" style="padding: 25px;">
+                    <div class="card" style="padding: 22px; height: 260px; box-sizing: border-box;">
                         <div style="margin-bottom:12px;"><span class="metric-title">POS 1-15:</span> <b style="float:right;">{kw_15}</b><div class="bar-bg"><div class="bar-fill-1"></div></div></div>
                         <div style="margin-bottom:12px;"><span class="metric-title">POS 16-30:</span> <b style="float:right;">{kw_30}</b><div class="bar-bg"><div class="bar-fill-2"></div></div></div>
                         <div style="margin-bottom:12px;"><span class="metric-title">POS 31-45:</span> <b style="float:right;">{kw_45}</b><div class="bar-bg"><div class="bar-fill-3"></div></div></div>
+                        <div style="margin-bottom:12px;"><span class="metric-title">POS 46-60:</span> <b style="float:right;">{kw_60}</b><div class="bar-bg"><div class="bar-fill-4"></div></div></div>
+                        <div><span class="metric-title">POS 60-100:</span> <b style="float:right;">{kw_100}</b><div class="bar-bg"><div class="bar-fill-5"></div></div></div>
                     </div>
                 </td>
                 <td style="width:50%;">
                     <div class="section-title" style="margin-top:10px;">4. Backlink Profile</div>
-                    <div class="card-dark" style="padding: 25px;">
-                        <table style="width:100%; color:white; line-height:2.2;">
+                    <div class="card-dark" style="padding: 22px; height: 260px; box-sizing: border-box;">
+                        <table style="width:100%; color:white; line-height:2.3; font-size:11pt;">
                             <tr><td>Profile Links:</td><td style="text-align:right; font-weight:bold;">{bl_prof}</td></tr>
                             <tr><td>Citation Links:</td><td style="text-align:right; font-weight:bold;">{bl_cit}</td></tr>
                             <tr><td>Web 2.0 Blogs:</td><td style="text-align:right; font-weight:bold;">{bl_web2}</td></tr>
                             <tr><td>Social Shares:</td><td style="text-align:right; font-weight:bold;">{bl_soc}</td></tr>
                             <tr><td>Guest Posts:</td><td style="text-align:right; font-weight:bold;">{bl_guest}</td></tr>
+                            <tr><td>Comment Links:</td><td style="text-align:right; font-weight:bold;">{bl_com}</td></tr>
                         </table>
                     </div>
                 </td>
             </tr>
         </table>
 
+        <!-- Section 5 -->
         <div class="section-title">5. Quality Summary</div>
         <div class="card-dark">
             <table style="width:100%; text-align:center;">
                 <tr>
-                    <td style="border-right:1px solid rgba(255,255,255,0.2);"><div class="metric-title">Clicks</div><div class="metric-value">{tq_clicks}</div></td>
-                    <td style="border-right:1px solid rgba(255,255,255,0.2);"><div class="metric-title">Impressions</div><div class="metric-value">{tq_imp}</div></td>
-                    <td><div class="metric-title">Avg Position</div><div class="metric-value" style="color:#22c55e;">{tq_pos}</div></td>
+                    <td style="border-right:1px solid rgba(255,255,255,0.2); width: 33%;"><div class="metric-title">Clicks</div><div class="metric-value">{format_growth(tq_clicks)}</div></td>
+                    <td style="border-right:1px solid rgba(255,255,255,0.2); width: 33%;"><div class="metric-title">Impressions</div><div class="metric-value">{format_growth(tq_imp)}</div></td>
+                    <td style="width: 33%;"><div class="metric-title">Avg Position</div><div class="metric-value">{format_growth(tq_pos)}</div></td>
                 </tr>
             </table>
         </div>
         
+        <!-- Section 6 -->
         <div class="section-title">6. Technical Health</div>
         <table class="grid">
             <tr>
@@ -233,14 +270,15 @@ html_template = f"""
                     </div>
                 </td>
                 <td style="width:60%;">
-                    <div class="error-box"><b style="color:#ef4444;">Not Found (404):</b> <span style="float:right; font-weight:bold;">{tech_404} Pages</span></div>
-                    <div class="warn-box"><b style="color:#f59e0b;">Crawled - Not Indexed:</b> <span style="float:right; font-weight:bold;">{tech_crawl} Pages</span></div>
-                    <div class="warn-box" style="border-color:#3b82f6; background:#eff6ff;"><b style="color:#3b82f6;">Discovered - Not Indexed:</b> <span style="float:right; font-weight:bold;">{tech_disc} Pages</span></div>
+                    <div class="error-box"><b style="color:#ef4444;">Not Found (404):</b> <span style="float:right; font-weight:bold; color:#ef4444;">{tech_404} Pages</span></div>
+                    <div class="warn-box"><b style="color:#f59e0b;">Crawled - Not Indexed:</b> <span style="float:right; font-weight:bold; color:#f59e0b;">{tech_crawl} Pages</span></div>
+                    <div class="notice-box"><b style="color:#3b82f6;">Discovered - Not Indexed:</b> <span style="float:right; font-weight:bold; color:#3b82f6;">{tech_disc} Pages</span></div>
                 </td>
             </tr>
         </table>
     </div>
 
+    <!-- Section 7 (Footer) -->
     <div class="footer-box">
         <h2 style="font-size:24pt; margin:0 0 15px 0;">Thank You For Your Business!</h2>
         <p style="color:#94a3b8; max-width:600px; margin:0 auto 30px auto; line-height:1.6; font-size:11pt;">
