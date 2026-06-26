@@ -5,3 +5,4 @@ libffi-dev
 libjpeg-dev
 libopenjp2-7-dev
 libgl1
+chromium
