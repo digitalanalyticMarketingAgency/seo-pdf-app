@@ -538,26 +538,10 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 <head>
 <meta charset="UTF-8">
 <style>
-    .header-banner {{ 
-        background-color: #0f172a; 
-        color: white; 
-        padding: 20px; 
-        text-align: center; 
-        border-radius: 8px; 
-        margin-bottom: 30px; 
-    }}
-    .header-title {{ font-size: 24pt; font-weight: bold; margin: 0; text-transform: uppercase; }}
-    .header-subtitle {{ font-size: 11pt; color: #cbd5e1; margin-top: 5px; }}
     @page {{ size: A4; margin: 18mm 16mm; }}
-body {{ background-color: #0f172a; padding: 20px; }}
-    .main-container {{ 
-        background-color: #ffffff; 
-        max-width: 800px; 
-        margin: 0 auto; 
-        padding: 40px; 
-        border-radius: 16px; 
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
-    }}
+body {{ background-color: #ffffff; margin: 0; padding: 0; }}
+.main-container {{ padding: 30px; background-color: #ffffff; }}
+
     .header-banner {{ 
         background-color: #0f172a; 
         color: white; 
@@ -569,13 +553,13 @@ body {{ background-color: #0f172a; padding: 20px; }}
     .header-title {{ font-size: 24pt; font-weight: bold; margin: 0; text-transform: uppercase; }}
     .header-subtitle {{ font-size: 11pt; color: #cbd5e1; margin-top: 5px; }}
     .grid {{ width: 100%; border-collapse: separate; border-spacing: 10px 0; }}
-    .card {{ background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center; }}
+    .card {{ background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }}
     .label {{ font-size: 8pt; font-weight: 700; color: #64748b; text-transform: uppercase; }}
     .value {{ font-size: 18pt; font-weight: 800; margin-top: 4px; color: #0f172a; }}
     .error-box {{ background-color: #fef2f2; border-left: 5px solid #ef4444; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-weight: 700; }}
     .warn-box {{ background-color: #fffbeb; border-left: 5px solid #f59e0b; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-weight: 700; }}
     .thankyou {{ text-align: center; padding: 60px 20px; }}
-    .footer {{ position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 8pt; color: #94a3b8; border-top: 1px solid #e2e8f0; padding: 10px 0; }}
+    .footer {{ position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 10pt; color: #ffffff; background-color: #0f172a; padding: 15px 0; }}
 </style>
 </head>
 <body>
