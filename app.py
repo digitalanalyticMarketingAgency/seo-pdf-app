@@ -617,8 +617,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 st.subheader("📄 Export Report")
 if st.button("Download as PDF", type="primary", use_container_width=True):
     with st.spinner("Building your PDF report..."):
-        try:
-            try:
+try:
             # এখানে সব ভেরিয়েবলগুলো একসাথে পাঠিয়ে দিন
             pdf_html = build_pdf_html(
                 agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, sc_position, 
@@ -630,6 +629,14 @@ if st.button("Download as PDF", type="primary", use_container_width=True):
             pdf_bytes = HTML(string=pdf_html).write_pdf()
             st.success("PDF generated successfully.")
             st.download_button(
+                label="📥 Click here to download the PDF",
+                data=pdf_bytes,
+                file_name=f"{agency_name.replace(' ', '_')}_SEO_Report.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+            )
+        except Exception as e:
+            st.error(f"Could not generate PDF: {e}")
                 label="📥 Click here to download the PDF",
                 data=pdf_bytes,
                 file_name=f"{agency_name.replace(' ', '_')}_SEO_Report_{datetime.date.today().isoformat()}.pdf",
