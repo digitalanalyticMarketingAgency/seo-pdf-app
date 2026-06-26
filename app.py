@@ -128,7 +128,7 @@ def generate_pdf():
     pdf.multi_cell(0, 8, msg, align='C')
 
     # Save to binary string for Streamlit download
-    return pdf.output(dest='S').encode('latin-1')
+    return bytes(pdf.output())
 
 # --- SUBMIT BUTTON ---
 st.markdown("---")
