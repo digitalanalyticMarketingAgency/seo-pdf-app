@@ -441,10 +441,9 @@ st.divider()
 # ============================================================
 def fig_to_base64(fig, width=700, height=300):
     """Convert a Plotly figure to a base64-encoded PNG for PDF embedding."""
-img_bytes = pio.to_image(fig, format="png", width=width, height=height, scale=2)
+    img_bytes = pio.to_image(fig, format="png", width=width, height=height, scale=2)
     b64 = base64.b64encode(img_bytes).decode("utf-8")
     return f'<img src="data:image/png;base64,{b64}" style="width:100%; border-radius:8px;" />'
-
 def build_kw_bar_html():
     max_kw = max(kw_values) if max(kw_values) > 0 else 1
     rows = ""
