@@ -59,7 +59,7 @@ st.markdown("""
         padding: 16px;
         text-align: center;
         margin-bottom: 12px;
-    }
+    }}
     .backlink-card .label {
         font-size: 10px;
         font-weight: 700;
@@ -542,14 +542,14 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     .header-subtitle {{ font-size: 11pt; color: #cbd5e1; margin-top: 5px; }}
     @page {{ size: A4; margin: 18mm 16mm; }}
     body { background-color: #0f172a; padding: 30px 10px; }
-    .main-container { 
+    .main-container {{ 
         background-color: #ffffff; 
         max-width: 800px; 
         margin: 0 auto; 
         padding: 40px; 
         border-radius: 16px; 
         box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
-    }
+    }}
     h1 {{ font-size: 22pt; margin-bottom: 2px; }}
     h2 {{ font-size: 14pt; border-bottom: 3px solid #2563eb; padding-bottom: 6px; margin-top: 28px; text-transform: uppercase; letter-spacing: 0.5px; }}
     .sub {{ color: #64748b; font-size: 11pt; margin-bottom: 20px; }}
