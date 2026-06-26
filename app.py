@@ -540,6 +540,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     }}
     .header-title {{ font-size: 24pt; font-weight: bold; margin: 0; text-transform: uppercase; }}
     .header-subtitle {{ font-size: 11pt; color: #cbd5e1; margin-top: 5px; }}
+    @page {{ size: A4; margin: 18mm 16mm; }}
 body {{ background-color: #0f172a; padding: 20px; }}
     .main-container {{ 
         background-color: #ffffff; 
@@ -566,7 +567,8 @@ body {{ background-color: #0f172a; padding: 20px; }}
     .error-box {{ background-color: #fef2f2; border-left: 5px solid #ef4444; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-weight: 700; }}
     .warn-box {{ background-color: #fffbeb; border-left: 5px solid #f59e0b; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-weight: 700; }}
     .thankyou {{ text-align: center; padding: 60px 20px; }}
-    .footer {{ text-align: center; font-size: 8pt; color: #94a3b8; border-top: 1px solid #e2e8f0; padding: 20px; }}
+    .footer {{ position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 8pt; color: #94a3b8; border-top: 1px solid #e2e8f0; padding: 10px 0; }}
+</style>
 </head>
 <body>
 <div class="main-container">
