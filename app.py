@@ -404,8 +404,8 @@ st.divider()
 # SECTION 7 — FINAL THANK YOU PAGE (preview)
 # ============================================================
 st.header("7. Closing Page Preview")
-st.markdown(f"""
-<div class="thankyou-box">
+st.markdown("""
+<div style="text-align: center; padding: 40px 20px;">
     <h1>Thank You!</h1>
     <p style="max-width:600px; margin:0 auto; color:#64748b; font-size:15px; line-height:1.7;">
         Thank you for taking the time to review this SEO performance report. We are committed to driving
@@ -413,10 +413,7 @@ st.markdown(f"""
         for your business. Should you have any questions, please feel free to reach out to us.
     </p>
     <p style="margin-top:30px; color:#94a3b8; font-size:13px;">
-        
-    <p style="margin-top:30px; color:#94a3b8; font-size:13px;">
-        Digital Analytic &nbsp;|&nbsp; {report_date}
-    </p>
+        Digital Analytic &nbsp;|&nbsp; June 2026
     </p>
 </div>
 """, unsafe_allow_html=True)
