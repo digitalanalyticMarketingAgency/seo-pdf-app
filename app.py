@@ -1,715 +1,539 @@
 import streamlit as st
+import plotly.graph_objects as go
 import datetime
 from weasyprint import HTML
 
-st.set_page_config(page_title="Premium SEO Report Builder", page_icon="💎", layout="wide")
+st.set_page_config(page_title="SEO Performance Report Generator", page_icon="📈", layout="wide")
 
-st.title("💎 Premium SEO Report Builder")
-st.write("Fill in the details to generate a high-end, premium PDF report.")
+# ============================================================
+# CUSTOM CSS
+# ============================================================
+st.markdown("""
+<style>
+    .metric-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 18px 20px;
+        text-align: center;
+    }
+    .metric-card .label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .metric-card .value {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-top: 6px;
+    }
+    .backlink-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 16px;
+        text-align: center;
+        margin-bottom: 12px;
+    }
+    .backlink-card .label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+    }
+    .backlink-card .value {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .traffic-summary-label {
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .traffic-summary-value {
+        font-size: 40px;
+        font-weight: 900;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+    .error-row {
+        background: #fef2f2;
+        border-left: 5px solid #ef4444;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    .warn-row {
+        background: #fffbeb;
+        border-left: 5px solid #f59e0b;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    .thankyou-box {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    section[data-testid="stSidebar"] {
+        background-color: #0f172a;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-# --- 1. AGENCY & CLIENT SETTINGS ---
-with st.expander("⚙️ Agency & Client Settings", expanded=True):
-    col1, col2 = st.columns(2)
-    agency_name    = col1.text_input("Agency Name",       value="Digital Analytic")
-    agency_website = col2.text_input("Agency Website",    value="www.digital-analytic.com")
-    agency_email   = col1.text_input("Agency Email",      value="support@digital-analytic.com")
-    client_domain  = col2.text_input("Client Domain",     value="client-website.com")
-    report_date    = st.text_input("Report Month/Year",   value=datetime.date.today().strftime("%B %Y"))
+st.title("📈 SEO Performance Report Generator")
+st.caption("Manually enter your SEO data below to generate a live dashboard and export a professional PDF report.")
 
-# --- 2. DATA INPUTS ---
-with st.expander("📊 1. Search Console"):
-    col1, col2 = st.columns(2)
-    sc_clicks = col1.number_input("Total Clicks",       value=45,   step=1)
-    sc_imp    = col2.number_input("Total Impressions",  value=17600, step=100)
-    sc_ctr    = col1.number_input("Avg CTR (%)",        value=0.3,  step=0.01, format="%.2f")
-    sc_pos    = col2.number_input("Avg Position",       value=30.3, step=0.1,  format="%.1f")
+# ============================================================
+# SIDEBAR — MANUAL DATA INPUT
+# ============================================================
+with st.sidebar:
+    st.header("⚙️ Report Settings")
+    agency_name = st.text_input("Agency / Brand Name", value="Your Agency")
+    report_date = st.text_input("Reporting Period", value=datetime.date.today().strftime("%B %Y"))
 
-with st.expander("💰 2. Revenue & Traffic Dashboard"):
-    col1, col2 = st.columns(2)
-    rev_conv    = col1.number_input("Conversions",          value=5436,   step=1)
-    rev_total   = col2.number_input("Total Revenue ($)",    value=5934.48, step=0.01, format="%.2f")
-    rev_imp     = col1.number_input("Event / Impression",   value=9238,   step=1)
-    rev_ecom    = col2.number_input("Ecommerce Purchases",  value=423,    step=1)
-    rev_pur_rev = col1.number_input("Purchase Revenue ($)", value=9785.37, step=0.01, format="%.2f")
-    rev_trans   = col2.number_input("Transactions",         value=823,    step=1)
+    st.divider()
+    st.header("1️⃣ Search Console")
+    sc_date = st.text_input("Timeframe / Date", value="Last 28 Days")
+    sc_clicks = st.number_input("Total Clicks", min_value=0, value=450, step=1)
+    sc_impressions = st.number_input("Total Impressions", min_value=0, value=17600, step=100)
+    sc_ctr = st.number_input("Average CTR (%)", min_value=0.0, value=2.6, step=0.1, format="%.2f")
+    sc_position = st.number_input("Average Position", min_value=0.0, value=14.3, step=0.1, format="%.1f")
 
-with st.expander("🎯 3. Keyword Ranking"):
-    col1, col2 = st.columns(2)
-    kw_15  = col1.number_input("Pos 1 to 15",   value=42, step=1)
-    kw_30  = col2.number_input("Pos 16 to 30",  value=28, step=1)
-    kw_45  = col1.number_input("Pos 31 to 45",  value=19, step=1)
-    kw_60  = col2.number_input("Pos 46 to 60",  value=12, step=1)
-    kw_100 = col1.number_input("Pos 60 to 100", value=8,  step=1)
+    st.divider()
+    st.header("2️⃣ Revenue & Traffic")
+    rt_visit = st.number_input("Visits", min_value=0, value=9238, step=1)
+    rt_revenue = st.number_input("Total Revenue ($)", min_value=0.0, value=5934.48, step=0.01, format="%.2f")
+    rt_impression = st.number_input("Impressions", min_value=0, value=17600, step=1)
+    rt_ecommerce = st.number_input("Ecommerce Purchases", min_value=0, value=423, step=1)
+    rt_purchase_revenue = st.number_input("Purchases Revenue ($)", min_value=0.0, value=9785.37, step=0.01, format="%.2f")
+    rt_transaction = st.number_input("Transactions", min_value=0, value=823, step=1)
 
-with st.expander("🔗 4. Backlink Profile"):
-    col1, col2 = st.columns(2)
-    bl_prof  = col1.text_input("Profile Backlinks", value="335.3K")
-    bl_cit   = col2.text_input("Citation Links",    value="32.0K")
-    bl_web2  = col1.text_input("Web 2.0 Blogs",     value="97.4K")
-    bl_soc   = col2.text_input("Social Shares",     value="237.8K")
-    bl_guest = col1.text_input("Guest Posts",       value="51.9K")
-    bl_com   = col2.text_input("Comment Links",     value="16.9K")
+    st.divider()
+    st.header("3️⃣ Keyword Ranking Distribution")
+    kw_1_15 = st.number_input("1 to 15 result", min_value=0, value=42, step=1)
+    kw_16_30 = st.number_input("16 to 30 result", min_value=0, value=28, step=1)
+    kw_31_45 = st.number_input("31 to 45 result", min_value=0, value=19, step=1)
+    kw_46_60 = st.number_input("46 to 60 result", min_value=0, value=12, step=1)
+    kw_60_100 = st.number_input("60 to 100 result", min_value=0, value=8, step=1)
 
-with st.expander("🚦 5. Traffic Quality Summary (Growth % included)"):
-    col1, col2 = st.columns(2)
-    tq_clicks = col1.text_input("Clicks (Number & Growth)",       value="872.7K | ▼ 3.90%")
-    tq_imp    = col2.text_input("Impressions (Number & Growth)",  value="248.8M | ▼ 1.74%")
-    tq_ctr    = col1.text_input("CTR (Number & Growth)",          value="5.36% | ▼ 5.41%")
-    tq_pos    = col2.text_input("Position (Number & Growth)",     value="13.38 | ▲ 1.61%")
+    st.divider()
+    st.header("4️⃣ Backlink Profile")
+    bl_profile = st.number_input("Profile Backlinks", min_value=0, value=335300, step=100)
+    bl_citation = st.number_input("Citation", min_value=0, value=32000, step=100)
+    bl_web2 = st.number_input("Web 2.0", min_value=0, value=97400, step=100)
+    bl_social = st.number_input("Social Share", min_value=0, value=237800, step=100)
+    bl_guest = st.number_input("Guest Post", min_value=0, value=51900, step=100)
+    bl_comment = st.number_input("Comment Backlink", min_value=0, value=16900, step=100)
 
-with st.expander("🛠️ 6. Technical SEO"):
-    col1, col2 = st.columns(2)
-    tech_idx   = col1.number_input("Indexing Pages",            value=1240, step=1)
-    tech_404   = col2.number_input("Not Found (404)",           value=3,    step=1)
-    tech_crawl = col1.number_input("Crawled - Not Indexed",     value=42,   step=1)
-    tech_disc  = col2.number_input("Discovered - Not Indexed",  value=18,   step=1)
+    st.divider()
+    st.header("5️⃣ Traffic Analytics Summary")
+    ta_click = st.number_input("Click", min_value=0, value=872700, step=100)
+    ta_impression = st.number_input("Total Impression", min_value=0, value=248800000, step=1000)
+    ta_ctr = st.number_input("CTR (%)", min_value=0.0, value=5.36, step=0.01, format="%.2f")
+    ta_position = st.number_input("Average Position ", min_value=0.0, value=13.38, step=0.01, format="%.2f")
 
-# --- HELPER FUNCTIONS ---
-def format_growth(val):
-    if '▼' in val:
-        parts = val.split('▼')
-        return f"{parts[0]} <span style='color:#ef4444; font-size:12pt;'>&darr;</span><span style='color:#ef4444;'>{parts[1]}</span>"
-    elif '▲' in val:
-        parts = val.split('▲')
-        return f"{parts[0]} <span style='color:#22c55e; font-size:12pt;'>&uarr;</span><span style='color:#22c55e;'>{parts[1]}</span>"
-    return val
+    st.divider()
+    st.header("6️⃣ Technical SEO & Indexing")
+    tech_indexed = st.number_input("Indexing Page (Valid)", min_value=0, value=1240, step=1)
+    tech_404 = st.number_input("Not Found (404)", min_value=0, value=3, step=1)
+    tech_crawled_not_indexed = st.number_input("Crawled - Not Indexed", min_value=0, value=42, step=1)
+    tech_discovered_not_indexed = st.number_input("Discovered - Not Indexed", min_value=0, value=18, step=1)
 
-def fmt_revenue(v):
-    return f"${v:,.2f}"
 
+# ============================================================
+# HELPER FORMATTERS
+# ============================================================
 def fmt_int(v):
     return f"{int(v):,}"
 
-# Dynamic keyword progress bars
-kw_values  = [kw_15, kw_30, kw_45, kw_60, kw_100]
-kw_labels  = ["POS 1-15", "POS 16-30", "POS 31-45", "POS 46-60", "POS 60-100"]
-kw_colors  = ["#2563eb", "#8b5cf6", "#f59e0b", "#ef4444", "#64748b"]
-max_kw     = max(kw_values) if max(kw_values) > 0 else 1
 
-def kw_bar_row(label, value, color, max_val):
-    width = int((value / max_val) * 100)
-    return f"""
-    <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
-      <tr>
-        <td style="width:90px; font-size:8pt; font-weight:700; color:#64748b; text-transform:uppercase;">{label}</td>
-        <td>
-          <div style="background:#f1f5f9; border-radius:4px; height:10px; width:100%;">
-            <div style="background:{color}; border-radius:4px; height:10px; width:{width}%;"></div>
-          </div>
-        </td>
-        <td style="width:36px; text-align:right; font-weight:900; font-size:10pt; color:#0f172a;">{value}</td>
-      </tr>
-    </table>"""
+def fmt_money(v):
+    return f"${v:,.2f}"
 
-kw_bars_html = "".join(
-    kw_bar_row(kw_labels[i], kw_values[i], kw_colors[i], max_kw) for i in range(5)
+
+def fmt_compact(v):
+    """Compact number formatting: 335300 -> 335.3K, 248800000 -> 248.8M"""
+    v = float(v)
+    if v >= 1_000_000:
+        return f"{v / 1_000_000:.1f}M"
+    if v >= 1_000:
+        return f"{v / 1_000:.1f}K"
+    return f"{v:.0f}"
+
+
+# ============================================================
+# SECTION 1 — SEARCH CONSOLE PERFORMANCE GRAPH
+# ============================================================
+st.header("1. Search Console Performance")
+
+c1, c2, c3, c4 = st.columns(4)
+with c1:
+    st.markdown(f"""<div class="metric-card"><div class="label">Total Clicks</div>
+    <div class="value">{fmt_int(sc_clicks)}</div></div>""", unsafe_allow_html=True)
+with c2:
+    st.markdown(f"""<div class="metric-card"><div class="label">Total Impressions</div>
+    <div class="value">{fmt_int(sc_impressions)}</div></div>""", unsafe_allow_html=True)
+with c3:
+    st.markdown(f"""<div class="metric-card"><div class="label">Average CTR</div>
+    <div class="value">{sc_ctr:.2f}%</div></div>""", unsafe_allow_html=True)
+with c4:
+    st.markdown(f"""<div class="metric-card"><div class="label">Average Position</div>
+    <div class="value">{sc_position:.1f}</div></div>""", unsafe_allow_html=True)
+
+st.write("")
+
+# Dual-line graph: Clicks = Google Blue, Impressions = Google Purple
+sc_fig = go.Figure()
+sc_fig.add_trace(go.Scatter(
+    x=[sc_date], y=[sc_clicks],
+    mode="lines+markers", name="Clicks",
+    line=dict(color="#4285F4", width=3),
+    marker=dict(size=10),
+    yaxis="y1"
+))
+sc_fig.add_trace(go.Scatter(
+    x=[sc_date], y=[sc_impressions],
+    mode="lines+markers", name="Impressions",
+    line=dict(color="#8E24AA", width=3),
+    marker=dict(size=10),
+    yaxis="y2"
+))
+sc_fig.update_layout(
+    height=320,
+    margin=dict(l=10, r=10, t=30, b=10),
+    plot_bgcolor="white",
+    paper_bgcolor="white",
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
+    yaxis=dict(title="Clicks", titlefont=dict(color="#4285F4"), tickfont=dict(color="#4285F4")),
+    yaxis2=dict(title="Impressions", titlefont=dict(color="#8E24AA"), tickfont=dict(color="#8E24AA"),
+                overlaying="y", side="right"),
+    xaxis=dict(title=None),
 )
+st.plotly_chart(sc_fig, use_container_width=True)
+st.caption("Note: this graph plots the single data point entered in the sidebar. Add more dated entries over time for a richer trend line.")
 
-# --- HTML TEMPLATE ---
-html_template = f"""<!DOCTYPE html>
+st.divider()
+
+# ============================================================
+# SECTION 2 — REVENUE & TRAFFIC DASHBOARD (3x2 card grid)
+# ============================================================
+st.header("2. Revenue & Traffic Dashboard")
+
+r1c1, r1c2, r1c3 = st.columns(3)
+r2c1, r2c2, r2c3 = st.columns(3)
+
+with r1c1:
+    st.markdown(f"""<div class="metric-card">🧑‍💻<div class="label">Visit</div>
+    <div class="value">{fmt_int(rt_visit)}</div></div>""", unsafe_allow_html=True)
+with r1c2:
+    st.markdown(f"""<div class="metric-card">💵<div class="label">Total Revenue</div>
+    <div class="value">{fmt_money(rt_revenue)}</div></div>""", unsafe_allow_html=True)
+with r1c3:
+    st.markdown(f"""<div class="metric-card">👁️<div class="label">Impression</div>
+    <div class="value">{fmt_int(rt_impression)}</div></div>""", unsafe_allow_html=True)
+with r2c1:
+    st.markdown(f"""<div class="metric-card">🛒<div class="label">Ecommerce Purchases</div>
+    <div class="value">{fmt_int(rt_ecommerce)}</div></div>""", unsafe_allow_html=True)
+with r2c2:
+    st.markdown(f"""<div class="metric-card">💰<div class="label">Purchases Revenue</div>
+    <div class="value">{fmt_money(rt_purchase_revenue)}</div></div>""", unsafe_allow_html=True)
+with r2c3:
+    st.markdown(f"""<div class="metric-card">🧾<div class="label">Transaction</div>
+    <div class="value">{fmt_int(rt_transaction)}</div></div>""", unsafe_allow_html=True)
+
+st.divider()
+
+# ============================================================
+# SECTION 3 — TOP KEYWORD RANKING DISTRIBUTION
+# ============================================================
+st.header("3. Top Keyword Ranking Distribution")
+
+kw_labels = ["1 to 15", "16 to 30", "31 to 45", "46 to 60", "60 to 100"]
+kw_values = [kw_1_15, kw_16_30, kw_31_45, kw_46_60, kw_60_100]
+kw_colors = ["#2563eb", "#8b5cf6", "#f59e0b", "#ef4444", "#64748b"]
+
+kw_fig = go.Figure(go.Bar(
+    x=kw_values,
+    y=kw_labels,
+    orientation="h",
+    marker_color=kw_colors,
+    text=kw_values,
+    textposition="outside",
+))
+kw_fig.update_layout(
+    height=320,
+    margin=dict(l=10, r=30, t=20, b=10),
+    plot_bgcolor="white",
+    paper_bgcolor="white",
+    xaxis=dict(title="Number of Keywords"),
+    yaxis=dict(title="Ranking Position", autorange="reversed"),
+)
+st.plotly_chart(kw_fig, use_container_width=True)
+
+st.divider()
+
+# ============================================================
+# SECTION 4 — BACKLINK PROFILE (cards + donut chart)
+# ============================================================
+st.header("4. Backlink Profile")
+
+bl_labels = ["Profile Backlinks", "Citation", "Web 2.0", "Social Share", "Guest Post", "Comment Backlink"]
+bl_values = [bl_profile, bl_citation, bl_web2, bl_social, bl_guest, bl_comment]
+bl_colors = ["#2563eb", "#8b5cf6", "#16a34a", "#f59e0b", "#ef4444", "#06b6d4"]
+
+bl_col1, bl_col2 = st.columns([1, 1])
+
+with bl_col1:
+    card_cols = st.columns(2)
+    for i, (label, value) in enumerate(zip(bl_labels, bl_values)):
+        with card_cols[i % 2]:
+            st.markdown(f"""<div class="backlink-card"><div class="label">{label}</div>
+            <div class="value">{fmt_compact(value)}</div></div>""", unsafe_allow_html=True)
+
+with bl_col2:
+    donut_fig = go.Figure(go.Pie(
+        labels=bl_labels,
+        values=bl_values,
+        hole=0.55,
+        marker=dict(colors=bl_colors),
+        textinfo="percent",
+    ))
+    donut_fig.update_layout(
+        height=320,
+        margin=dict(l=10, r=10, t=10, b=10),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.2),
+    )
+    st.plotly_chart(donut_fig, use_container_width=True)
+
+st.divider()
+
+# ============================================================
+# SECTION 5 — TRAFFIC ANALYTICS SUMMARY (typography-led)
+# ============================================================
+st.header("5. Traffic Analytics Summary")
+
+ta_col1, ta_col2, ta_col3, ta_col4 = st.columns(4)
+with ta_col1:
+    st.markdown(f"""<div class="traffic-summary-label">Click</div>
+    <div class="traffic-summary-value">{fmt_compact(ta_click)}</div>""", unsafe_allow_html=True)
+with ta_col2:
+    st.markdown(f"""<div class="traffic-summary-label">Total Impression</div>
+    <div class="traffic-summary-value">{fmt_compact(ta_impression)}</div>""", unsafe_allow_html=True)
+with ta_col3:
+    st.markdown(f"""<div class="traffic-summary-label">CTR</div>
+    <div class="traffic-summary-value">{ta_ctr:.2f}%</div>""", unsafe_allow_html=True)
+with ta_col4:
+    st.markdown(f"""<div class="traffic-summary-label">Average Position</div>
+    <div class="traffic-summary-value">{ta_position:.2f}</div>""", unsafe_allow_html=True)
+
+st.divider()
+
+# ============================================================
+# SECTION 6 — TECHNICAL SEO & INDEXING HEALTH
+# ============================================================
+st.header("6. Technical SEO & Indexing Health")
+
+tech_col1, tech_col2 = st.columns([1, 1.4])
+
+with tech_col1:
+    gauge_fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=tech_indexed,
+        number={"font": {"size": 36, "color": "#16a34a"}},
+        title={"text": "Indexed Pages (Valid)", "font": {"size": 14}},
+        gauge={
+            "axis": {"range": [0, max(tech_indexed * 1.2, 1)], "visible": False},
+            "bar": {"color": "#16a34a"},
+            "bgcolor": "#f1f5f9",
+            "borderwidth": 0,
+        }
+    ))
+    gauge_fig.update_layout(height=260, margin=dict(l=20, r=20, t=40, b=10))
+    st.plotly_chart(gauge_fig, use_container_width=True)
+
+with tech_col2:
+    st.markdown("**Errors & Warnings**")
+    st.markdown(f"""<div class="error-row">🔴 Not Found (404): <b>{fmt_int(tech_404)}</b> pages</div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="warn-row">🟠 Crawled — Currently Not Indexed: <b>{fmt_int(tech_crawled_not_indexed)}</b> pages</div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="warn-row">🟠 Discovered — Currently Not Indexed: <b>{fmt_int(tech_discovered_not_indexed)}</b> pages</div>""", unsafe_allow_html=True)
+
+st.divider()
+
+# ============================================================
+# SECTION 7 — FINAL THANK YOU PAGE (preview)
+# ============================================================
+st.header("7. Closing Page Preview")
+st.markdown(f"""
+<div class="thankyou-box">
+    <h1>Thank You!</h1>
+    <p style="max-width:600px; margin:0 auto; color:#64748b; font-size:15px; line-height:1.7;">
+        Thank you for taking the time to review this SEO performance report. We are committed to driving
+        continuous digital growth, optimizing your web presence, and ensuring top-tier search engine rankings
+        for your business. Should you have any questions, please feel free to reach out to us.
+    </p>
+    <p style="margin-top:30px; color:#94a3b8; font-size:13px;">
+        {agency_name} &nbsp;|&nbsp; {report_date}
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+st.divider()
+
+
+# ============================================================
+# PDF GENERATION
+# ============================================================
+def build_kw_bar_html():
+    max_kw = max(kw_values) if max(kw_values) > 0 else 1
+    rows = ""
+    for label, value, color in zip(kw_labels, kw_values, kw_colors):
+        width_pct = int((value / max_kw) * 100)
+        rows += f"""
+        <tr>
+          <td style="width:90px; font-size:9pt; font-weight:700; color:#64748b;">{label}</td>
+          <td>
+            <div style="background:#f1f5f9; border-radius:4px; height:12px; width:100%;">
+              <div style="background:{color}; border-radius:4px; height:12px; width:{width_pct}%;"></div>
+            </div>
+          </td>
+          <td style="width:40px; text-align:right; font-weight:800; font-size:10pt;">{value}</td>
+        </tr>"""
+    return f'<table style="width:100%; border-collapse:collapse;">{rows}</table>'
+
+
+def build_backlink_rows_html():
+    rows = ""
+    for label, value in zip(bl_labels, bl_values):
+        rows += f"""
+        <tr>
+          <td style="padding:6px 0;">{label}</td>
+          <td style="padding:6px 0; text-align:right; font-weight:800;">{fmt_compact(value)}</td>
+        </tr>"""
+    return f'<table style="width:100%; border-collapse:collapse; font-size:11pt;">{rows}</table>'
+
+
+def build_pdf_html():
+    kw_bars_html = build_kw_bar_html()
+    backlink_rows_html = build_backlink_rows_html()
+
+    return f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <style>
-  @page {{
-    size: A4;
-    margin: 0;
-    @bottom-center {{
-      content: none;
-    }}
-  }}
-  body {{
-    font-family: Helvetica, Arial, sans-serif;
-    color: #1e293b;
-    margin: 0;
-    padding: 0;
-    background: #f1f5f9;
-  }}
-  /* ---- PAGE BREAK ---- */
-  .page-break {{ page-break-before: always; }}
-
-  /* ---- PAGE WRAPPER: each page is exactly A4 height ---- */
-  .page-wrap {{
-    page-break-after: always;
-    page-break-inside: avoid;
-    position: relative;
-    width: 210mm;
-    height: 297mm;
-    overflow: hidden;
-    box-sizing: border-box;
-  }}
-
-  /* ---- COVER ---- */
-  .cover-page {{
-    background: #081426;
-    width: 100%;
-    height: 100%;
-    display: block;
-    padding: 0;
-    box-sizing: border-box;
-  }}
-  .cover-inner {{
-    padding: 120px 60px 60px 60px;
-  }}
-  .cover-badge {{
-    display: inline-block;
-    background: #112240;
-    border: 1px solid #1e3a5f;
-    border-radius: 6px;
-    padding: 6px 16px;
-    color: #60a5fa;
-    font-size: 9pt;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 40px;
-  }}
-  .cover-title {{
-    font-size: 36pt;
-    font-weight: 900;
-    color: #ffffff;
-    letter-spacing: 1px;
-    margin: 0 0 12px 0;
-    line-height: 1.15;
-  }}
-  .cover-sub {{
-    font-size: 14pt;
-    color: #60a5fa;
-    font-weight: 700;
-    margin: 0 0 60px 0;
-  }}
-  .cover-divider {{
-    border: none;
-    border-top: 2px solid #1e3a5f;
-    margin: 0 0 40px 0;
-  }}
-  .cover-meta-table {{
-    width: 100%;
-    border-collapse: collapse;
-    color: #cbd5e1;
-    font-size: 11pt;
-  }}
-  .cover-meta-table td {{ padding: 8px 0; }}
-  .cover-meta-label {{ color: #64748b; font-size: 8pt; font-weight:700; text-transform:uppercase; letter-spacing:1px; }}
-  .cover-meta-value {{ color: #ffffff; font-size: 13pt; font-weight: 800; }}
-
-  /* ---- CONTAINER ---- */
-  .container {{
-    padding: 28px 36px;
-    background: #f1f5f9;
-  }}
-
-  /* ---- SECTION TITLE ---- */
-  .section-title {{
-    font-size: 13pt;
-    color: #0f172a;
-    margin: 24px 0 12px 0;
-    padding-bottom: 6px;
-    border-bottom: 3px solid #2563eb;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }}
-
-  /* ---- CARDS ---- */
-  .card {{
-    background: #fff;
-    padding: 24px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-  }}
-  .card-dark {{
-    background: #0f172a;
-    color: white;
-    padding: 24px;
-    border-radius: 16px;
-    border-left: 5px solid #16a34a;
-  }}
-  .metric-title {{
-    font-size: 9pt;
-    color: #64748b;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }}
-  .card-dark .metric-title {{ color: #94a3b8; }}
-  .metric-value {{
-    font-size: 22pt;
-    font-weight: 900;
-    margin-top: 4px;
-    color: #0f172a;
-  }}
-  .card-dark .metric-value {{ color: white; }}
-
-  /* ---- GRID ---- */
-  .grid {{ width: 100%; border-collapse: separate; border-spacing: 12px; }}
-  .grid td {{ vertical-align: top; }}
-
-  /* ---- TECH BOXES ---- */
-  .error-box  {{ background:#fff0f0; border-left:5px solid #ef4444; border-radius:8px; padding:14px 18px; margin-bottom:12px; }}
-  .warn-box   {{ background:#fffbea; border-left:5px solid #f59e0b; border-radius:8px; padding:14px 18px; margin-bottom:12px; }}
-  .notice-box {{ background:#eff6ff; border-left:5px solid #3b82f6; border-radius:8px; padding:14px 18px; }}
-
-  /* ---- FOOTER ---- */
-  .page-footer {{
-    background: #081426;
-    color: #94a3b8;
-    text-align: center;
-    padding: 10px 20px;
-    font-size: 8pt;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    box-sizing: border-box;
-  }}
-
-  /* ---- THANK YOU ---- */
-  .thankyou-page {{
-    background: #081426;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    box-sizing: border-box;
-  }}
-  .thankyou-inner {{
-    padding: 140px 60px 60px 60px;
-  }}
-
-  /* ---- RECOMMENDATIONS ---- */
-  .rec-table {{ width:100%; border-collapse:collapse; font-size:10pt; }}
-  .rec-table th {{ background:#0f172a; color:#fff; padding:10px 14px; text-align:left; font-size:9pt; text-transform:uppercase; letter-spacing:0.5px; }}
-  .rec-table td {{ padding:10px 14px; border-bottom:1px solid #e2e8f0; vertical-align:top; }}
-  .rec-table tr:nth-child(even) td {{ background:#f8fafc; }}
-  .badge-high   {{ background:#fee2e2; color:#b91c1c; border-radius:4px; padding:2px 8px; font-size:8pt; font-weight:700; }}
-  .badge-medium {{ background:#fef3c7; color:#92400e; border-radius:4px; padding:2px 8px; font-size:8pt; font-weight:700; }}
-  .badge-low    {{ background:#dbeafe; color:#1e40af; border-radius:4px; padding:2px 8px; font-size:8pt; font-weight:700; }}
+  @page {{ size: A4; margin: 18mm 16mm; }}
+  body {{ font-family: Helvetica, Arial, sans-serif; color: #0f172a; }}
+  h1 {{ font-size: 22pt; margin-bottom: 2px; }}
+  h2 {{ font-size: 14pt; border-bottom: 3px solid #2563eb; padding-bottom: 6px; margin-top: 28px; text-transform: uppercase; letter-spacing: 0.5px; }}
+  .sub {{ color: #64748b; font-size: 11pt; margin-bottom: 20px; }}
+  .grid {{ width: 100%; border-collapse: separate; border-spacing: 10px 0; }}
+  .card {{ background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center; }}
+  .card .label {{ font-size: 8pt; font-weight: 700; color: #64748b; text-transform: uppercase; }}
+  .card .value {{ font-size: 18pt; font-weight: 800; margin-top: 4px; }}
+  .error-box {{ background:#fef2f2; border-left:5px solid #ef4444; border-radius:8px; padding:10px 14px; margin-bottom:8px; font-weight:700; }}
+  .warn-box  {{ background:#fffbeb; border-left:5px solid #f59e0b; border-radius:8px; padding:10px 14px; margin-bottom:8px; font-weight:700; }}
+  .thankyou {{ text-align:center; padding: 60px 20px; }}
+  .footer {{ position: fixed; bottom: -10mm; left: 0; right: 0; text-align: center; font-size: 8pt; color: #94a3b8; }}
 </style>
 </head>
 <body>
 
-<!-- ===================== PAGE 1: COVER ===================== -->
-<div class="page-wrap">
-  <div class="cover-page">
-    <div class="cover-inner">
-      <div class="cover-badge">SEO Performance Report</div>
-      <div class="cover-title">
-        <span style="color:#22c55e;">{agency_name.split()[0] if ' ' in agency_name else agency_name}</span>
-        <span style="color:#60a5fa;"> {' '.join(agency_name.split()[1:]) if ' ' in agency_name else ''}</span>
+<h1>SEO Performance Report</h1>
+<div class="sub">{agency_name} &nbsp;|&nbsp; {report_date}</div>
+
+<h2>1. Search Console Performance ({sc_date})</h2>
+<table class="grid">
+  <tr>
+    <td style="width:25%;"><div class="card"><div class="label">Total Clicks</div><div class="value" style="color:#4285F4;">{fmt_int(sc_clicks)}</div></div></td>
+    <td style="width:25%;"><div class="card"><div class="label">Total Impressions</div><div class="value" style="color:#8E24AA;">{fmt_int(sc_impressions)}</div></div></td>
+    <td style="width:25%;"><div class="card"><div class="label">Average CTR</div><div class="value">{sc_ctr:.2f}%</div></div></td>
+    <td style="width:25%;"><div class="card"><div class="label">Average Position</div><div class="value">{sc_position:.1f}</div></div></td>
+  </tr>
+</table>
+
+<h2>2. Revenue & Traffic Dashboard</h2>
+<table class="grid">
+  <tr>
+    <td style="width:33%;"><div class="card"><div class="label">Visit</div><div class="value">{fmt_int(rt_visit)}</div></div></td>
+    <td style="width:33%;"><div class="card"><div class="label">Total Revenue</div><div class="value">{fmt_money(rt_revenue)}</div></div></td>
+    <td style="width:33%;"><div class="card"><div class="label">Impression</div><div class="value">{fmt_int(rt_impression)}</div></div></td>
+  </tr>
+  <tr>
+    <td style="width:33%;"><div class="card"><div class="label">Ecommerce Purchases</div><div class="value">{fmt_int(rt_ecommerce)}</div></div></td>
+    <td style="width:33%;"><div class="card"><div class="label">Purchases Revenue</div><div class="value">{fmt_money(rt_purchase_revenue)}</div></div></td>
+    <td style="width:33%;"><div class="card"><div class="label">Transaction</div><div class="value">{fmt_int(rt_transaction)}</div></div></td>
+  </tr>
+</table>
+
+<h2>3. Top Keyword Ranking Distribution</h2>
+{kw_bars_html}
+
+<h2>4. Backlink Profile</h2>
+{backlink_rows_html}
+
+<h2>5. Traffic Analytics Summary</h2>
+<table class="grid">
+  <tr>
+    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">CLICK</div><div style="font-size:20pt; font-weight:900;">{fmt_compact(ta_click)}</div></td>
+    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">TOTAL IMPRESSION</div><div style="font-size:20pt; font-weight:900;">{fmt_compact(ta_impression)}</div></td>
+    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">CTR</div><div style="font-size:20pt; font-weight:900;">{ta_ctr:.2f}%</div></td>
+    <td style="width:25%; text-align:center;"><div class="label" style="font-size:9pt;">AVG POSITION</div><div style="font-size:20pt; font-weight:900;">{ta_position:.2f}</div></td>
+  </tr>
+</table>
+
+<h2>6. Technical SEO & Indexing Health</h2>
+<table class="grid">
+  <tr>
+    <td style="width:35%;">
+      <div class="card" style="padding:24px;">
+        <div class="label">Indexed Pages (Valid)</div>
+        <div class="value" style="color:#16a34a; font-size:26pt;">{fmt_int(tech_indexed)}</div>
       </div>
-      <div class="cover-sub">Search Engine Optimization Report</div>
-      <hr class="cover-divider"/>
-      <table class="cover-meta-table">
-        <tr>
-          <td style="width:50%;">
-            <div class="cover-meta-label">Client Domain</div>
-            <div class="cover-meta-value">{client_domain}</div>
-          </td>
-          <td style="width:50%;">
-            <div class="cover-meta-label">Reporting Period</div>
-            <div class="cover-meta-value">{report_date}</div>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" style="padding-top:24px;">
-            <div class="cover-meta-label">Prepared By</div>
-            <div class="cover-meta-value">{agency_name}</div>
-            <div style="color:#64748b; font-size:10pt; margin-top:4px;">{agency_website} &nbsp;|&nbsp; {agency_email}</div>
-          </td>
-        </tr>
-      </table>
-    </div>
-  </div>
-  <div class="page-footer">Generated by {agency_name} &nbsp;|&nbsp; {agency_website} &nbsp;|&nbsp; {report_date}</div>
-</div>
+    </td>
+    <td style="width:65%; vertical-align:top;">
+      <div class="error-box">Not Found (404): {fmt_int(tech_404)} pages</div>
+      <div class="warn-box">Crawled — Not Indexed: {fmt_int(tech_crawled_not_indexed)} pages</div>
+      <div class="warn-box">Discovered — Not Indexed: {fmt_int(tech_discovered_not_indexed)} pages</div>
+    </td>
+  </tr>
+</table>
 
-<!-- ===================== PAGE 2: EXECUTIVE SUMMARY ===================== -->
-<div class="page-wrap">
-<div class="container" style="height:calc(297mm - 38px); overflow:hidden; box-sizing:border-box;">
-  <div class="section-title">Executive Summary</div>
-
-  <!-- 4 KPI Cards -->
-  <table class="grid">
-    <tr>
-      <td style="width:25%;">
-        <div class="card" style="border-top:4px solid #2563eb;">
-          <div class="metric-title">Organic Traffic</div>
-          <div class="metric-value" style="color:#2563eb;">{fmt_int(sc_clicks)}</div>
-          <div style="font-size:8pt; color:#64748b; margin-top:4px;">Total Clicks</div>
-        </div>
-      </td>
-      <td style="width:25%;">
-        <div class="card" style="border-top:4px solid #8b5cf6;">
-          <div class="metric-title">Top Keywords</div>
-          <div class="metric-value" style="color:#8b5cf6;">{kw_15}</div>
-          <div style="font-size:8pt; color:#64748b; margin-top:4px;">Ranking Pos 1–15</div>
-        </div>
-      </td>
-      <td style="width:25%;">
-        <div class="card" style="border-top:4px solid #16a34a;">
-          <div class="metric-title">New Backlinks</div>
-          <div class="metric-value" style="color:#16a34a;">{bl_prof}</div>
-          <div style="font-size:8pt; color:#64748b; margin-top:4px;">Profile Backlinks</div>
-        </div>
-      </td>
-      <td style="width:25%;">
-        <div class="card" style="border-top:4px solid #f59e0b;">
-          <div class="metric-title">Index Health</div>
-          <div class="metric-value" style="color:#f59e0b;">{fmt_int(tech_idx)}</div>
-          <div style="font-size:8pt; color:#64748b; margin-top:4px;">Indexed Pages</div>
-        </div>
-      </td>
-    </tr>
-  </table>
-
-  <!-- Key Achievements -->
-  <div class="card" style="margin-top:16px; border-top:4px solid #16a34a;">
-    <div class="metric-title" style="margin-bottom:14px;">Key Achievements</div>
-    <table style="width:100%; border-collapse:collapse; font-size:10pt;">
-      <tr>
-        <td style="width:50%; padding:8px 12px; border-right:1px solid #e2e8f0;">
-          <span style="color:#16a34a; font-weight:900; font-size:14pt;">&#10003;</span>&nbsp;
-          <strong>{fmt_int(sc_clicks)}</strong> total organic clicks recorded
-        </td>
-        <td style="width:50%; padding:8px 12px;">
-          <span style="color:#16a34a; font-weight:900; font-size:14pt;">&#10003;</span>&nbsp;
-          <strong>{kw_15}</strong> keywords ranking in top 15 positions
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:8px 12px; border-right:1px solid #e2e8f0; border-top:1px solid #e2e8f0;">
-          <span style="color:#16a34a; font-weight:900; font-size:14pt;">&#10003;</span>&nbsp;
-          <strong>{fmt_int(tech_idx)}</strong> pages successfully indexed
-        </td>
-        <td style="padding:8px 12px; border-top:1px solid #e2e8f0;">
-          <span style="color:#16a34a; font-weight:900; font-size:14pt;">&#10003;</span>&nbsp;
-          <strong>{fmt_revenue(rev_total)}</strong> total revenue tracked
-        </td>
-      </tr>
-    </table>
-  </div>
-</div>
-<div class="page-footer">Generated by {agency_name} &nbsp;|&nbsp; {agency_website} &nbsp;|&nbsp; {report_date}</div>
-</div>
-
-<!-- ===================== PAGE 3: SEARCH CONSOLE ===================== -->
-<div class="page-wrap">
-<div class="container" style="height:calc(297mm - 38px); overflow:hidden; box-sizing:border-box;">
-  <div class="section-title">Search Console Performance</div>
-  <table class="grid">
-    <tr>
-      <td style="width:25%;">
-        <div class="card" style="border-top:4px solid #2563eb;">
-          <div class="metric-title">Total Clicks</div>
-          <div class="metric-value" style="color:#2563eb;">{fmt_int(sc_clicks)}</div>
-        </div>
-      </td>
-      <td style="width:25%;">
-        <div class="card" style="border-top:4px solid #8b5cf6;">
-          <div class="metric-title">Impressions</div>
-          <div class="metric-value" style="color:#8b5cf6;">{fmt_int(sc_imp)}</div>
-        </div>
-      </td>
-      <td style="width:25%;">
-        <div class="card" style="border-top:4px solid #f59e0b;">
-          <div class="metric-title">Average CTR</div>
-          <div class="metric-value" style="color:#f59e0b;">{sc_ctr:.2f}%</div>
-        </div>
-      </td>
-      <td style="width:25%;">
-        <div class="card" style="border-top:4px solid #64748b;">
-          <div class="metric-title">Average Position</div>
-          <div class="metric-value" style="color:#64748b;">{sc_pos:.1f}</div>
-        </div>
-      </td>
-    </tr>
-  </table>
-
-  <!-- Chart -->
-  <div class="card" style="margin-top:6px; padding:22px;">
-    <div style="font-size:9pt; font-weight:700; color:#64748b; margin-bottom:14px; text-transform:uppercase; letter-spacing:0.5px;">
-      Performance Trend (30 Days)
-      &nbsp;&nbsp;&nbsp;
-      <span style="color:#8b5cf6; font-size:12pt; line-height:0;">&bull;</span> Impressions
-      &nbsp;&nbsp;
-      <span style="color:#2563eb; font-size:12pt; line-height:0;">&bull;</span> Clicks
-    </div>
-    <svg width="100%" height="130" viewBox="0 0 700 130" preserveAspectRatio="none">
-      <line x1="0" y1="20"  x2="700" y2="20"  stroke="#f1f5f9" stroke-width="2"/>
-      <line x1="0" y1="65"  x2="700" y2="65"  stroke="#f1f5f9" stroke-width="2"/>
-      <line x1="0" y1="110" x2="700" y2="110" stroke="#f1f5f9" stroke-width="2"/>
-      <!-- Impressions area -->
-      <polygon points="0,100 100,70 250,80 400,30 550,50 700,20 700,130 0,130"
-               fill="#8b5cf6" fill-opacity="0.10"/>
-      <path d="M 0 100 L 100 70 L 250 80 L 400 30 L 550 50 L 700 20"
-            fill="none" stroke="#8b5cf6" stroke-width="3" stroke-linecap="round"/>
-      <!-- Clicks area -->
-      <polygon points="0,110 100,100 250,90 400,60 550,75 700,45 700,130 0,130"
-               fill="#2563eb" fill-opacity="0.10"/>
-      <path d="M 0 110 L 100 100 L 250 90 L 400 60 L 550 75 L 700 45"
-            fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-  </div>
-</div>
-<div class="page-footer">Generated by {agency_name} &nbsp;|&nbsp; {agency_website} &nbsp;|&nbsp; {report_date}</div>
-</div>
-
-<!-- ===================== PAGE 4: REVENUE DASHBOARD ===================== -->
-<div class="page-wrap">
-<div class="container" style="height:calc(297mm - 38px); overflow:hidden; box-sizing:border-box;">
-  <div class="section-title">Revenue Dashboard</div>
-  <table class="grid">
-    <tr>
-      <td style="width:33%;">
-        <div class="card" style="border-top:4px solid #16a34a;">
-          <div class="metric-title">Conversions</div>
-          <div class="metric-value" style="color:#16a34a;">{fmt_int(rev_conv)}</div>
-        </div>
-      </td>
-      <td style="width:33%;">
-        <div class="card" style="border-top:4px solid #2563eb;">
-          <div class="metric-title">Total Revenue</div>
-          <div class="metric-value" style="color:#2563eb;">{fmt_revenue(rev_total)}</div>
-        </div>
-      </td>
-      <td style="width:33%;">
-        <div class="card" style="border-top:4px solid #8b5cf6;">
-          <div class="metric-title">Event / Impression</div>
-          <div class="metric-value" style="color:#8b5cf6;">{fmt_int(rev_imp)}</div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td style="width:33%;">
-        <div class="card" style="border-top:4px solid #f59e0b;">
-          <div class="metric-title">Ecommerce Purchases</div>
-          <div class="metric-value" style="color:#f59e0b;">{fmt_int(rev_ecom)}</div>
-        </div>
-      </td>
-      <td style="width:33%;">
-        <div class="card" style="border-top:4px solid #16a34a;">
-          <div class="metric-title">Purchase Revenue</div>
-          <div class="metric-value" style="color:#16a34a;">{fmt_revenue(rev_pur_rev)}</div>
-        </div>
-      </td>
-      <td style="width:33%;">
-        <div class="card" style="border-top:4px solid #64748b;">
-          <div class="metric-title">Transactions</div>
-          <div class="metric-value" style="color:#64748b;">{fmt_int(rev_trans)}</div>
-        </div>
-      </td>
-    </tr>
-  </table>
-
-  <!-- Traffic Quality Summary -->
-  <div class="section-title" style="margin-top:22px;">Traffic Quality Summary</div>
-  <div class="card-dark">
-    <table style="width:100%; text-align:center; border-collapse:collapse;">
-      <tr>
-        <td style="border-right:1px solid #1e3a5f; width:25%; padding:12px;">
-          <div class="metric-title">Clicks</div>
-          <div class="metric-value">{format_growth(tq_clicks)}</div>
-        </td>
-        <td style="border-right:1px solid #1e3a5f; width:25%; padding:12px;">
-          <div class="metric-title">Impressions</div>
-          <div class="metric-value">{format_growth(tq_imp)}</div>
-        </td>
-        <td style="border-right:1px solid #1e3a5f; width:25%; padding:12px;">
-          <div class="metric-title">CTR</div>
-          <div class="metric-value">{format_growth(tq_ctr)}</div>
-        </td>
-        <td style="width:25%; padding:12px;">
-          <div class="metric-title">Avg Position</div>
-          <div class="metric-value">{format_growth(tq_pos)}</div>
-        </td>
-      </tr>
-    </table>
-  </div>
-</div>
-<div class="page-footer">Generated by {agency_name} &nbsp;|&nbsp; {agency_website} &nbsp;|&nbsp; {report_date}</div>
-</div>
-
-<!-- ===================== PAGE 5: KEYWORD RANKINGS + BACKLINK ===================== -->
-<div class="page-wrap">
-<div class="container" style="height:calc(297mm - 38px); overflow:hidden; box-sizing:border-box;">
-  <table class="grid">
-    <tr>
-      <td style="width:50%;">
-        <div class="section-title">Keyword Rankings</div>
-        <div class="card" style="min-height:280px; padding:22px;">
-          {kw_bars_html}
-        </div>
-      </td>
-      <td style="width:50%;">
-        <div class="section-title">Backlink Profile</div>
-        <div class="card-dark" style="min-height:280px; padding:22px;">
-          <table style="width:100%; color:white; border-collapse:collapse; font-size:11pt; line-height:2.2;">
-            <tr>
-              <td>Profile Links:</td>
-              <td style="text-align:right; font-weight:bold;">{bl_prof}</td>
-            </tr>
-            <tr>
-              <td>Citation Links:</td>
-              <td style="text-align:right; font-weight:bold;">{bl_cit}</td>
-            </tr>
-            <tr>
-              <td>Web 2.0 Blogs:</td>
-              <td style="text-align:right; font-weight:bold;">{bl_web2}</td>
-            </tr>
-            <tr>
-              <td>Social Shares:</td>
-              <td style="text-align:right; font-weight:bold;">{bl_soc}</td>
-            </tr>
-            <tr>
-              <td>Guest Posts:</td>
-              <td style="text-align:right; font-weight:bold;">{bl_guest}</td>
-            </tr>
-            <tr>
-              <td>Comment Links:</td>
-              <td style="text-align:right; font-weight:bold;">{bl_com}</td>
-            </tr>
-          </table>
-        </div>
-      </td>
-    </tr>
-  </table>
-</div>
-<div class="page-footer">Generated by {agency_name} &nbsp;|&nbsp; {agency_website} &nbsp;|&nbsp; {report_date}</div>
-</div>
-
-<!-- ===================== PAGE 6: TECHNICAL SEO HEALTH ===================== -->
-<div class="page-wrap">
-<div class="container" style="height:calc(297mm - 38px); overflow:hidden; box-sizing:border-box;">
-  <div class="section-title">Technical SEO Health</div>
-  <table class="grid">
-    <tr>
-      <td style="width:38%;">
-        <div class="card" style="text-align:center; padding:40px 20px; border:2px solid #16a34a;">
-          <div class="metric-title">Valid Indexing Pages</div>
-          <div style="font-size:36pt; font-weight:900; color:#16a34a; margin:10px 0;">{fmt_int(tech_idx)}</div>
-          <div style="color:#64748b; font-weight:bold; font-size:10pt;">Healthy Status</div>
-        </div>
-      </td>
-      <td style="width:62%; vertical-align:top;">
-        <div class="error-box">
-          <table style="width:100%; border-collapse:collapse;">
-            <tr>
-              <td><b style="color:#ef4444;">Not Found (404):</b></td>
-              <td style="text-align:right; font-weight:bold; color:#ef4444;">{tech_404} Pages</td>
-            </tr>
-          </table>
-        </div>
-        <div class="warn-box">
-          <table style="width:100%; border-collapse:collapse;">
-            <tr>
-              <td><b style="color:#f59e0b;">Crawled — Not Indexed:</b></td>
-              <td style="text-align:right; font-weight:bold; color:#f59e0b;">{tech_crawl} Pages</td>
-            </tr>
-          </table>
-        </div>
-        <div class="notice-box">
-          <table style="width:100%; border-collapse:collapse;">
-            <tr>
-              <td><b style="color:#3b82f6;">Discovered — Not Indexed:</b></td>
-              <td style="text-align:right; font-weight:bold; color:#3b82f6;">{tech_disc} Pages</td>
-            </tr>
-          </table>
-        </div>
-      </td>
-    </tr>
-  </table>
-</div>
-<div class="page-footer">Generated by {agency_name} &nbsp;|&nbsp; {agency_website} &nbsp;|&nbsp; {report_date}</div>
-</div>
-
-<!-- ===================== PAGE 7: RECOMMENDATIONS ===================== -->
-<div class="page-wrap">
-<div class="container" style="height:calc(297mm - 38px); overflow:hidden; box-sizing:border-box;">
-  <div class="section-title">Recommendations Priority</div>
-  <table class="rec-table">
-    <thead>
-      <tr>
-        <th style="width:15%;">Priority</th>
-        <th style="width:45%;">Recommendation</th>
-        <th style="width:40%;">Expected Impact</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="badge-high">HIGH</span></td>
-        <td>Fix 404 pages ({tech_404} currently broken)</td>
-        <td>Improve crawl efficiency and user experience</td>
-      </tr>
-      <tr>
-        <td><span class="badge-high">HIGH</span></td>
-        <td>Improve low CTR pages (current avg CTR: {sc_ctr:.2f}%)</td>
-        <td>Increase organic traffic from existing impressions</td>
-      </tr>
-      <tr>
-        <td><span class="badge-medium">MEDIUM</span></td>
-        <td>Improve keyword rankings (pos 16–30 currently: {kw_30})</td>
-        <td>Push more keywords into top 15 for more clicks</td>
-      </tr>
-      <tr>
-        <td><span class="badge-medium">MEDIUM</span></td>
-        <td>Build authority backlinks to strengthen domain</td>
-        <td>Improved domain authority and ranking signals</td>
-      </tr>
-      <tr>
-        <td><span class="badge-low">LOW</span></td>
-        <td>Improve internal linking structure</td>
-        <td>Better crawlability and page authority distribution</td>
-      </tr>
-      <tr>
-        <td><span class="badge-low">LOW</span></td>
-        <td>Resolve {tech_crawl} crawled-but-not-indexed pages</td>
-        <td>Expand index coverage and improve site signals</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<div class="page-footer">Generated by {agency_name} &nbsp;|&nbsp; {agency_website} &nbsp;|&nbsp; {report_date}</div>
-</div>
-
-<!-- ===================== PAGE 8: THANK YOU ===================== -->
-<div class="page-wrap">
-<div class="thankyou-page">
-  <div class="thankyou-inner">
-    <div style="font-size:48pt; margin-bottom:24px;">&#128591;</div>
-    <h1 style="font-size:36pt; font-weight:900; color:#ffffff; margin:0 0 16px 0;">Thank You!</h1>
-    <p style="color:#94a3b8; font-size:13pt; max-width:520px; margin:0 auto 40px auto; line-height:1.7;">
-      We are committed to driving continuous digital growth, optimizing your web presence,
-      and ensuring top-tier search engine rankings. Should you have any questions regarding
-      these analytics, please reach out.
-    </p>
-    <div style="border-top:1px solid #1e3a5f; padding-top:30px; color:#cbd5e1; font-size:13pt; font-weight:700;">
-      {agency_name}
-    </div>
-    <div style="color:#60a5fa; font-size:11pt; margin-top:8px;">{agency_website}</div>
-    <div style="color:#64748b; font-size:10pt; margin-top:4px;">{agency_email}</div>
-  </div>
-</div>
-<div class="page-footer">Generated by {agency_name} &nbsp;|&nbsp; {agency_website} &nbsp;|&nbsp; {report_date}</div>
+<div style="page-break-before: always;"></div>
+<div class="thankyou">
+  <h1>Thank You!</h1>
+  <p style="max-width:480px; margin:0 auto; color:#64748b; font-size:12pt; line-height:1.7;">
+    Thank you for taking the time to review this SEO performance report. We are committed to driving
+    continuous digital growth, optimizing your web presence, and ensuring top-tier search engine rankings
+    for your business. Should you have any questions, please feel free to reach out to us.
+  </p>
+  <p style="margin-top:40px; color:#94a3b8; font-size:11pt;">{agency_name} &nbsp;|&nbsp; {report_date}</p>
 </div>
 
 </body>
-</html>
-"""
+</html>"""
 
-st.markdown("---")
-if st.button("🚀 Generate Premium PDF", use_container_width=True):
-    with st.spinner("Rendering Premium Design..."):
+
+st.subheader("📄 Export Report")
+if st.button("Download as PDF", type="primary", use_container_width=True):
+    with st.spinner("Building your PDF report..."):
         try:
-            pdf_bytes = HTML(string=html_template).write_pdf()
-            st.success("✨ Premium Report Generated Successfully!")
+            pdf_html = build_pdf_html()
+            pdf_bytes = HTML(string=pdf_html).write_pdf()
+            st.success("PDF generated successfully.")
             st.download_button(
-                label="📥 Download High-Quality PDF",
+                label="📥 Click here to download the PDF",
                 data=pdf_bytes,
-                file_name=f"{agency_name.replace(' ', '_')}_SEO_Report.pdf",
+                file_name=f"{agency_name.replace(' ', '_')}_SEO_Report_{datetime.date.today().isoformat()}.pdf",
                 mime="application/pdf",
-                use_container_width=True
+                use_container_width=True,
             )
         except Exception as e:
-            st.error("Error generating PDF. Please ensure WeasyPrint is installed correctly.")
-            st.write(e)
+            st.error(f"Could not generate PDF: {e}")
