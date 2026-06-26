@@ -18,30 +18,27 @@ st.set_page_config(page_title="SEO Performance Report Generator", page_icon="�
 # CUSTOM CSS
 # ============================================================
 st.markdown("""
-st.markdown("""
 <style>
-    /* আপনার আগের CSS কোডগুলো এখানে থাকবে */
-    .metric-card {
-        /* ... */
-    }
-    
-    /* নতুন সাইডবার ফিক্স এখানে যোগ করুন */
+    /* সাইডবার টেক্সট সাদা করার জন্য */
     [data-testid="stSidebar"] * {
         color: #f8fafc !important;
     }
 
+    /* ইনপুট বক্সের টেক্সট কালো করার জন্য */
     .stTextInput input, .stNumberInput input {
         color: black !important;
     }
-</style>
-""", unsafe_allow_html=True)
-<style>
+
+    /* অন্যান্য CSS */
     .metric-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 14px;
         padding: 18px 20px;
         text-align: center;
+    }
+</style>
+""", unsafe_allow_html=True)
     }
     .metric-card .label {
         font-size: 11px;
