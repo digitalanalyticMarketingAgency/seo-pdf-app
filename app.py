@@ -457,7 +457,8 @@ def build_backlink_rows_html():
     return f'<table style="width:100%; border-collapse:collapse; font-size:11pt;">{rows}</table>'
 
 
-def build_pdf_html():
+# আগের লাইনটি ডিলিট করে এটি বসান:
+def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, sc_position, rt_visit, rt_revenue, rt_impression, rt_ecommerce, rt_purchase_revenue, rt_transaction, tech_indexed, tech_404, tech_crawled_not_indexed, tech_discovered_not_indexed, sc_date, ta_click, ta_impression, ta_ctr, ta_position):
     kw_bars_html = build_kw_bar_html()
     backlink_rows_html = build_backlink_rows_html()
 
@@ -617,7 +618,15 @@ st.subheader("📄 Export Report")
 if st.button("Download as PDF", type="primary", use_container_width=True):
     with st.spinner("Building your PDF report..."):
         try:
-            pdf_html = build_pdf_html()
+            try:
+            # এখানে সব ভেরিয়েবলগুলো একসাথে পাঠিয়ে দিন
+            pdf_html = build_pdf_html(
+                agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, sc_position, 
+                rt_visit, rt_revenue, rt_impression, rt_ecommerce, rt_purchase_revenue, 
+                rt_transaction, tech_indexed, tech_404, tech_crawled_not_indexed, 
+                tech_discovered_not_indexed, sc_date, ta_click, ta_impression, 
+                ta_ctr, ta_position
+            )
             pdf_bytes = HTML(string=pdf_html).write_pdf()
             st.success("PDF generated successfully.")
             st.download_button(
