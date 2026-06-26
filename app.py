@@ -99,9 +99,8 @@ st.caption("Manually enter your SEO data below to generate a live dashboard and 
 # ============================================================
 with st.sidebar:
     st.header("⚙️ Report Settings")
-    <td style="width: 40%; text-align:right;">
-    <img src="https://github.com/digitalanalyticMarketingAgency/seo-pdf-app/blob/main/digital-analytic-logo.png" style="width:150px; height:auto;">
-</td>
+# ১০২ নম্বর লাইনের জায়গায় এই কোডটি দিন:
+    st.image("digital-analytic-logo.png", width=150)>
     report_date = st.text_input("Reporting Period", value=datetime.date.today().strftime("%B %Y"))
 
     st.divider()
