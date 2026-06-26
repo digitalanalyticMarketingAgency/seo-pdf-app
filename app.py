@@ -29,16 +29,13 @@ st.markdown("""
         color: black !important;
     }
 
-    /* অন্যান্য CSS */
+    /* অন্যান্য স্টাইল */
     .metric-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 14px;
         padding: 18px 20px;
         text-align: center;
-    }
-</style>
-""", unsafe_allow_html=True)
     }
     .metric-card .label {
         font-size: 11px;
@@ -53,6 +50,8 @@ st.markdown("""
         color: #0f172a;
         margin-top: 6px;
     }
+</style>
+""", unsafe_allow_html=True)
     .backlink-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
