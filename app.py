@@ -264,14 +264,14 @@ sc_fig.add_trace(go.Scatter(
 ))
 sc_fig.update_layout(
     height=320,
-    margin=dict(l=10, r=10, t=30, b=10),
+    margin=dict(l=60, r=60, t=30, b=30),
     plot_bgcolor="white",
     paper_bgcolor="white",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
     yaxis=dict(title=dict(text="Clicks", font=dict(color="#4285F4")), tickfont=dict(color="#4285F4"), showgrid=True, gridcolor="#f1f5f9"),
     yaxis2=dict(title=dict(text="Impressions", font=dict(color="#8E24AA")), tickfont=dict(color="#8E24AA"),
                 overlaying="y", side="right", showgrid=False),
-    xaxis=dict(title=None, showgrid=False),
+    xaxis=dict(title=None, showgrid=False)
 )
 st.plotly_chart(sc_fig, use_container_width=True)
 st.caption("Trend shows estimated daily distribution across the last 7 days based on your total figures. Enter per-day data for exact trends.")
@@ -326,11 +326,11 @@ kw_fig = go.Figure(go.Bar(
 ))
 kw_fig.update_layout(
     height=320,
-    margin=dict(l=10, r=30, t=20, b=10),
+    margin=dict(l=60, r=50, t=20, b=60),
     plot_bgcolor="white",
     paper_bgcolor="white",
     xaxis=dict(title="Number of Keywords"),
-    yaxis=dict(title="Ranking Position", autorange="reversed"),
+    yaxis=dict(title="Ranking Position", autorange="reversed")
 )
 st.plotly_chart(kw_fig, use_container_width=True)
 
@@ -362,11 +362,11 @@ with bl_col2:
         marker=dict(colors=bl_colors),
         textinfo="percent",
     ))
-    donut_fig.update_layout(
-        height=320,
-        margin=dict(l=10, r=10, t=10, b=10),
-        legend=dict(orientation="h", yanchor="bottom", y=-0.2),
-    )
+donut_fig.update_layout(
+            height=320,
+            margin=dict(l=20, r=20, t=20, b=90), # b=90 করা হয়েছে যাতে লেজেন্ডের জন্য নিচে পর্যাপ্ত জায়গা থাকে
+            legend=dict(orientation="h", yanchor="bottom", y=-0.3) # লেজেন্ডটিকে আরও নিচে সুন্দরভাবে সাজানো হয়েছে
+        )
     st.plotly_chart(donut_fig, use_container_width=True)
 
 st.divider()
@@ -412,7 +412,7 @@ with tech_col1:
             "borderwidth": 0,
         }
     ))
-    gauge_fig.update_layout(height=260, margin=dict(l=20, r=20, t=40, b=10))
+    gauge_fig.update_layout(height=260, margin=dict(l=40, r=40, t=40, b=30))
     st.plotly_chart(gauge_fig, use_container_width=True)
 
 with tech_col2:
@@ -538,7 +538,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 <head>
 <meta charset="UTF-8">
 <style>
-    /* ১ ও ৮. জিরো মার্জিন এবং ফুল-পেজ ব্যাকগ্রাউন্ড ফিক্স (প্রতি পেজে নিখুঁতভাবে রিপিট হবে) */
+    /* জিরো মার্জিন এবং ফুল-পেজ ব্যাকগ্রাউন্ড */
     @page {{ size: A4; margin: 0; }} 
     
     body {{ 
@@ -548,17 +548,18 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         color: #e2e8f0; 
         background-color: #0b0f19;
         background-image: url('https://raw.githubusercontent.com/digitalanalyticMarketingAgency/seo-pdf-app/main/a4.png');
-        background-size: 210mm 297mm; /* একদম A4 সাইজে ফিক্সড */
-        background-repeat: repeat; /* মাল্টি-পেজ পিডিএফের জন্য ম্যাজিক রুল */
+        background-size: 210mm 297mm;
+        background-repeat: repeat; 
+        padding-bottom: 80px; /* ফুটার ওভারল্যাপ সলভ */
     }}
     
-    /* ২ ও ১১. সেফ জোন এবং ব্রীদিং স্পেস (দমবন্ধ ভাব কমানো) */
+    /* সেফ জোন */
     .main-container {{ 
-        padding: 40px 35px 100px 35px; /* নিচে ১০০px ফাঁকা ফুটারের জন্য */
+        padding: 40px 35px 30px 35px; 
         box-sizing: border-box;
     }}
     
-    /* ১২. প্রফেশনাল হেডার ও সাবটাইটেল কালার ফিক্স */
+    /* হেডার */
     .header-banner {{ 
         background-color: rgba(19, 17, 28, 0.85); 
         border: 1px solid rgba(139, 92, 246, 0.3); 
@@ -566,12 +567,13 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         padding: 30px 20px; 
         text-align: center; 
         border-radius: 12px; 
-        margin-bottom: 40px; 
+        margin-bottom: 30px; 
+        page-break-inside: avoid;
     }}
     .header-title {{ font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; letter-spacing: 1px; color: #ffffff; }}
-    .header-subtitle {{ font-size: 12pt; color: #e2e8f0; margin-top: 10px; font-weight: 500; }} /* কালার উজ্জ্বল করা হয়েছে */
+    .header-subtitle {{ font-size: 12pt; color: #e2e8f0; margin-top: 10px; font-weight: 500; }}
     
-    /* সেকশন হেডিং */
+    /* সেকশন হেডিং - পেজ ব্রেক ফিক্স */
     h2 {{ 
         font-size: 16pt; 
         color: #ffffff; 
@@ -580,63 +582,77 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         border-bottom: 1px solid rgba(255,255,255,0.1);
         padding-bottom: 10px;
         page-break-after: avoid; 
+        page-break-inside: avoid;
     }}
     
-    /* ৯. কার্ড ও গ্রিড এলাইনমেন্ট ফিক্স (সব কার্ড সমান উচ্চতার হবে) */
+    /* গ্রিড এলাইনমেন্ট ফিক্স (Flexbox-এর বদলে Inline-block) */
     .grid {{ 
-        display: flex; 
-        flex-wrap: wrap; 
-        gap: 20px; 
-        align-items: stretch; 
-        margin-bottom: 30px; 
+        display: block; 
+        width: 100%; 
+        margin-bottom: 25px; 
+        text-align: center; /* কার্ডগুলোকে সেন্টারে রাখতে */
         page-break-inside: avoid; 
     }}
+    
+    /* কার্ডের ভার্টিক্যাল সেন্টারিং ফিক্স */
     .card {{ 
-        flex: 1; 
+        display: inline-block; 
+        width: calc(32% - 22px); /* ৩টি কার্ড পাশাপাশি নিখুঁতভাবে বসবে */
+        margin: 10px; 
+        vertical-align: top; 
         background-color: rgba(17, 24, 39, 0.85); 
         border: 1px solid rgba(255,255,255,0.05); 
         border-top: 2px solid #8b5cf6; 
         border-radius: 12px; 
-        padding: 24px 10px; 
-        text-align: center; 
+        padding: 30px 10px; /* ভার্টিক্যাল ব্যালেন্স */
+        box-sizing: border-box;
         page-break-inside: avoid;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
     }}
-    .label {{ font-size: 9pt; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px; }}
-    .value {{ font-size: 22pt; font-weight: 800; color: #ffffff; }}
+    .label {{ font-size: 9pt; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; display: block; }}
+    .value {{ font-size: 22pt; font-weight: 800; color: #ffffff; display: block; }}
     
-    /* ৩, ৫, ৬ ও ১০. চার্টের সাইজ, ওভারল্যাপ এবং টেক্সট ক্র্যাশ ফিক্স */
+    /* চার্টের ওভারল্যাপ এবং সাইজ ফিক্স */
     img {{ 
         background-color: #ffffff; 
         border: 5px solid rgba(17, 24, 39, 0.95); 
         border-radius: 12px; 
-        padding: 20px; /* চার্টের চারপাশে বেশি সাদা জায়গা দেওয়া হলো যাতে টেক্সট না কাটে */
+        padding: 15px; 
         max-width: 90%; 
-        max-height: 350px; /* সাইজ কন্ট্রোল */
+        max-height: 310px; /* বিশাল ডেড স্পেস কমানো হয়েছে */
         display: block; 
-        margin: 0 auto 20px auto; 
+        margin: 10px auto 25px auto; 
         object-fit: contain; 
         page-break-inside: avoid;
     }}
 
-    /* ৭. ব্রোকেন লোগো বা ইমেজ ফিক্স (ভুল লোগোগুলো হাইড করা) */
+    /* ব্রোকেন লোগো হাইড */
     img[alt*="logo"], .footer img, img[src*="logo"] {{
         display: none !important;
     }}
     
-    /* ওয়ার্নিং বক্স ফিক্স */
-    .error-box {{ background-color: rgba(69, 10, 10, 0.85); border-left: 5px solid #ef4444; border-radius: 8px; padding: 15px; margin-bottom: 12px; color: #fecaca; font-weight: 600; page-break-inside: avoid; }}
-    .warn-box {{ background-color: rgba(66, 32, 6, 0.85); border-left: 5px solid #f59e0b; border-radius: 8px; padding: 15px; margin-bottom: 12px; color: #fde68a; font-weight: 600; page-break-inside: avoid; }}
+    /* ওয়ার্নিং বক্সগুলোর গ্রিড ব্যালেন্স ফিক্স */
+    .error-box, .warn-box {{ 
+        display: block;
+        width: 90%;
+        margin: 10px auto;
+        background-color: rgba(69, 10, 10, 0.85); 
+        border-left: 5px solid #ef4444; 
+        border-radius: 8px; 
+        padding: 15px; 
+        color: #fecaca; 
+        font-weight: 600; 
+        page-break-inside: avoid; 
+        box-sizing: border-box;
+        text-align: left;
+    }}
+    .warn-box {{ background-color: rgba(66, 32, 6, 0.85); border-left-color: #f59e0b; color: #fde68a; }}
     
-    /* ১৩. ব্যাকলিংক টেবিল ফিক্স */
+    /* ব্যাকলিংক টেবিল */
     table {{
         width: 100%;
         border-collapse: collapse;
         background-color: rgba(17, 24, 39, 0.85);
         border-radius: 12px;
-        overflow: hidden;
         margin-bottom: 25px;
         color: #e2e8f0;
         page-break-inside: avoid;
@@ -644,10 +660,10 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     th, td {{ padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; }}
     td:last-child {{ font-weight: bold; color: #ffffff; text-align: right; }}
 
-    /* ৪. ভাসমান ফুটার ফিক্স */
+    /* ফুটার ডুপ্লিকেশন বাগ ফিক্স (Z-index এবং important যুক্ত করা হয়েছে) */
     .footer {{ 
-        position: fixed; 
-        bottom: 20px; /* ইমেজের ডার্ক ব্যান্ডের ঠিক মাঝখানে বসবে */
+        position: fixed !important; 
+        bottom: 15px !important; 
         left: 0; 
         right: 0; 
         text-align: center; 
@@ -655,15 +671,18 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         color: #9ca3af; 
         background: transparent; 
         border: none; 
-    }}
-
-    /* ২. পেজ ৪ এর ইনভিজিবল টেক্সট ফিক্স */
-    .thankyou, .thankyou h2, .thankyou p, p {{
-        color: #ffffff !important;
-        text-align: center;
+        z-index: 1000;
         page-break-inside: avoid;
     }}
-    .thankyou {{ padding: 40px 20px; }}
+
+    /* থ্যাংক ইউ পেজ ফিক্স */
+    .thankyou {{ 
+        text-align: center;
+        padding: 80px 20px;
+        page-break-inside: avoid;
+        margin-top: 40px;
+    }}
+    .thankyou h2, .thankyou p, p {{ color: #ffffff !important; page-break-inside: avoid; }}
 </style>
 </head>
 <body>
