@@ -1,9 +1,8 @@
-# app.py - SEO Performance Report Generator (FPDF2 Master Version)
+# app.py - SEO Performance Report Generator (FIXED Master Version)
 # ============================================================
 
 import streamlit as st
 import plotly.graph_objects as go
-import plotly.io as pio
 import datetime
 import random
 import os
@@ -20,9 +19,27 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    [data-testid="stSidebar"] { background-color: #0f172a !important; }
-    [data-testid="stSidebar"] * { color: #ffffff !important; }
+    /* Sidebar Styling - FIXED */
+    [data-testid="stSidebar"] { 
+        background-color: #0f172a !important; 
+    }
+    [data-testid="stSidebar"] * { 
+        color: #ffffff !important; 
+    }
+    [data-testid="stSidebar"] input, 
+    [data-testid="stSidebar"] textarea {
+        color: #0f172a !important;
+        background-color: #ffffff !important;
+    }
+    [data-testid="stSidebar"] label {
+        color: #e2e8f0 !important;
+    }
+    [data-testid="stSidebar"] .stNumberInput label,
+    [data-testid="stSidebar"] .stTextInput label {
+        color: #e2e8f0 !important;
+    }
     
+    /* Metric Cards */
     .metric-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 1px solid #334155;
@@ -44,6 +61,7 @@ st.markdown("""
         margin-top: 8px;
     }
     
+    /* Backlink Cards */
     .backlink-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 1px solid #334155;
@@ -65,6 +83,7 @@ st.markdown("""
         margin-top: 6px;
     }
     
+    /* Traffic Summary */
     .traffic-summary-label {
         font-size: 12px;
         font-weight: 700;
@@ -80,6 +99,7 @@ st.markdown("""
         margin-top: 4px;
     }
     
+    /* Error/Warning Rows */
     .error-row {
         background: #fef2f2;
         border-left: 4px solid #ef4444;
@@ -126,7 +146,6 @@ class PDF(FPDF):
         self.report_date = report_date
         
     def header(self):
-        # Background image (যদি থাকে)
         if os.path.exists('a4.png'):
             self.image('a4.png', 0, 0, 210, 297)
     
@@ -150,17 +169,14 @@ class PDF(FPDF):
         self.ln(5)
     
     def add_metric_row(self, metrics):
-        """metrics = [(label, value, color), ...]"""
         self.set_font("Helvetica", '', 9)
         col_width = 190 / len(metrics)
         
-        # Labels
         self.set_text_color(150, 150, 150)
         for label, _, _ in metrics:
             self.cell(col_width, 6, label.upper(), 0, 0, 'C')
         self.ln()
         
-        # Values
         self.set_font("Helvetica", 'B', 16)
         for _, value, color in metrics:
             self.set_text_color(*color)
@@ -217,13 +233,10 @@ class PDF(FPDF):
 
 
 def create_pdf(data, chart_paths):
-    """Main PDF creation function"""
     pdf = PDF(data['agency_name'], data['report_date'])
     
-    # Page 1: Title
     pdf.add_title_page()
     
-    # Page 2: Search Console & Revenue
     pdf.add_page()
     pdf.set_y(20)
     
@@ -248,7 +261,6 @@ def create_pdf(data, chart_paths):
         ('Transaction', fmt_int(data['rt_transaction']), (255, 255, 255))
     ])
     
-    # Page 3: Keywords & Backlinks
     pdf.add_page()
     pdf.set_y(20)
     
@@ -268,7 +280,6 @@ def create_pdf(data, chart_paths):
     ])
     pdf.add_chart_image(chart_paths['bl_chart'], width=100)
     
-    # Page 4: Traffic & Technical
     pdf.add_page()
     pdf.set_y(20)
     
@@ -288,7 +299,6 @@ def create_pdf(data, chart_paths):
         data['tech_discovered_not_indexed']
     )
     
-    # Page 5: Thank You
     pdf.add_thank_you_page()
     
     return bytes(pdf.output())
@@ -396,7 +406,7 @@ trend_dates = [(today - datetime.timedelta(days=6 - i)).strftime("%b %d") for i 
 clicks_trend = _trend(sc_clicks)
 impressions_trend = _trend(sc_impressions)
 
-# Search Console Chart
+# Search Console Chart - FIXED for new Plotly
 sc_fig = go.Figure()
 sc_fig.add_trace(go.Scatter(
     x=trend_dates, y=clicks_trend,
@@ -418,8 +428,19 @@ sc_fig.update_layout(
     plot_bgcolor="white",
     paper_bgcolor="white",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
-    yaxis=dict(title="Clicks", titlefont=dict(color="#4285F4"), tickfont=dict(color="#4285F4"), showgrid=True, gridcolor="#f1f5f9"),
-    yaxis2=dict(title="Impressions", titlefont=dict(color="#8E24AA"), tickfont=dict(color="#8E24AA"), overlaying="y", side="right", showgrid=False),
+    yaxis=dict(
+        title=dict(text="Clicks", font=dict(color="#4285F4")),
+        tickfont=dict(color="#4285F4"),
+        showgrid=True,
+        gridcolor="#f1f5f9"
+    ),
+    yaxis2=dict(
+        title=dict(text="Impressions", font=dict(color="#8E24AA")),
+        tickfont=dict(color="#8E24AA"),
+        overlaying="y",
+        side="right",
+        showgrid=False
+    ),
     xaxis=dict(showgrid=False)
 )
 st.plotly_chart(sc_fig, use_container_width=True)
@@ -595,7 +616,6 @@ if st.button("🚀 Generate PDF Report", type="primary", use_container_width=Tru
         kw_fig.write_image("kw_chart.png", width=800, height=280, scale=2)
         donut_fig.write_image("bl_chart.png", width=400, height=350, scale=2)
         
-        # Prepare data dictionary
         data = {
             'agency_name': agency_name,
             'report_date': report_date,
@@ -631,7 +651,6 @@ if st.button("🚀 Generate PDF Report", type="primary", use_container_width=Tru
             'bl_chart': 'bl_chart.png'
         }
         
-        # Generate PDF
         pdf_bytes = create_pdf(data, chart_paths)
         
         st.success("✅ PDF generated successfully!")
