@@ -165,7 +165,7 @@ def growth_indicator(growth, for_pdf=False):
 # এরপর তোমার ১৬৩ নম্বর লাইন থেকে ক্লাস শুরু হবে:
 
 class SEOReportPDF(FPDF):
-    def __init__(self, theme="Dark", font="Helvetica"):
+    def __init__(self, theme="Light", font="Helvetica"):
         super().__init__(orientation='P', unit='mm', format='A4')
         self.theme = THEMES[theme]
         self.selected_font = font
