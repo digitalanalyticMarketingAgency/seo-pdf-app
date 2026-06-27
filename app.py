@@ -24,7 +24,6 @@ st.set_page_config(
 # ============================================================
 # 2. THEME CONFIGURATION
 # ============================================================
-# এটি তোমার ফাইলের একদম শুরুর দিকের THEMES এর জায়গায় বসাও (লাইন ২৭ থেকে ৩৮ এর বদলে)
 THEMES = {
     "Light": {
         "bg_primary": (255, 255, 255),
@@ -158,12 +157,8 @@ def growth_indicator(growth, for_pdf=False):
 
 
 # ============================================================
+# 5. PDF CLASS (FPDF2 - DYNAMIC FLOW WITH WHITE TEXT)
 # ============================================================
-# 5. PDF CLASS (FPDF2 - DYNAMIC FLOW)
-# ============================================================
-
-# এরপর তোমার ১৬৩ নম্বর লাইন থেকে ক্লাস শুরু হবে:
-
 class SEOReportPDF(FPDF):
     def __init__(self, theme="Light", font="Helvetica"):
         super().__init__(orientation='P', unit='mm', format='A4')
@@ -173,7 +168,7 @@ class SEOReportPDF(FPDF):
         self.page_height = 297
         self.margin = 15
         self.content_width = self.page_width - (2 * self.margin)
-        self.usable_height = self.page_height - 50  # Leave space for header/footer
+        self.usable_height = self.page_height - 50
         
     def header(self):
         # Background image on EVERY page
@@ -183,18 +178,17 @@ class SEOReportPDF(FPDF):
         # Compact header (only after cover page)
         if self.page_no() > 1:
             self.set_font(self.selected_font, 'B', 9)
-            self.set_text_color(*self.theme["text_secondary"])
+            self.set_text_color(200, 200, 200)  # Light gray for header
             self.set_xy(self.margin, 8)
             self.cell(0, 5, AGENCY_INFO["name"], 0, 0, 'L')
             self.cell(0, 5, st.session_state.report_date, 0, 0, 'R')
         
-        # Set starting Y position after header
         self.set_y(20)
     
     def footer(self):
         self.set_y(-15)
         self.set_font(self.selected_font, '', 7)
-        self.set_text_color(*self.theme["text_secondary"])
+        self.set_text_color(180, 180, 180)  # Light gray
         footer_text = f"{AGENCY_INFO['website']} | {AGENCY_INFO['phone']}"
         self.cell(0, 4, footer_text, 0, 0, 'C')
         self.set_font(self.selected_font, 'B', 8)
@@ -206,14 +200,18 @@ class SEOReportPDF(FPDF):
         return self.get_y()
     
     def check_page_break(self, height_needed):
-        """Check if we need a new page, if yes add one"""
         if self.get_y() + height_needed > self.usable_height:
             self.add_page()
             return True
         return False
     
-    def set_theme_colors(self, color_type):
-        self.set_text_color(*self.theme[color_type])
+    def set_white_text(self):
+        """Set text color to white"""
+        self.set_text_color(255, 255, 255)
+    
+    def set_light_gray_text(self):
+        """Set text color to light gray"""
+        self.set_text_color(200, 200, 200)
         
     def set_fill_theme(self, color_type):
         self.set_fill_color(*self.theme[color_type])
@@ -230,10 +228,10 @@ class SEOReportPDF(FPDF):
             self.image(logo_path, x=75, y=35, w=60)
             y = 105
         
-        # Title
+        # Title - WHITE
         self.set_y(y)
         self.set_font(self.selected_font, 'B', 26)
-        self.set_text_color(255, 255, 255)
+        self.set_white_text()
         self.multi_cell(0, 11, report_title, 0, 'C')
         
         # Decorative line
@@ -244,31 +242,31 @@ class SEOReportPDF(FPDF):
         # Client info
         if client_name:
             self.set_font(self.selected_font, '', 12)
-            self.set_theme_colors("text_secondary")
+            self.set_light_gray_text()
             self.cell(0, 7, "Prepared for:", 0, 1, 'C')
             self.set_font(self.selected_font, 'B', 16)
-            self.set_theme_colors("text_primary")
+            self.set_white_text()
             self.cell(0, 9, client_name, 0, 1, 'C')
             if client_website:
                 self.set_font(self.selected_font, '', 11)
-                self.set_theme_colors("accent")
+                self.set_text_color(*self.theme["accent"])
                 self.cell(0, 7, client_website, 0, 1, 'C')
         
         # Description
         if report_description:
             self.ln(8)
             self.set_font(self.selected_font, '', 10)
-            self.set_theme_colors("text_secondary")
+            self.set_light_gray_text()
             self.set_x(30)
             self.multi_cell(150, 5, report_description, 0, 'C')
         
         # Bottom info
         self.set_y(250)
         self.set_font(self.selected_font, '', 11)
-        self.set_theme_colors("text_secondary")
+        self.set_light_gray_text()
         self.cell(0, 6, st.session_state.report_date, 0, 1, 'C')
         self.set_font(self.selected_font, 'B', 12)
-        self.set_theme_colors("accent")
+        self.set_text_color(*self.theme["accent"])
         self.cell(0, 7, AGENCY_INFO["name"], 0, 1, 'C')
     
     def add_section_title(self, title, section_num=None):
@@ -278,13 +276,12 @@ class SEOReportPDF(FPDF):
         self.rect(self.margin, self.get_y(), 3, 8, 'F')
         self.set_x(self.margin + 6)
         self.set_font(self.selected_font, 'B', 12)
-        self.set_theme_colors("text_primary")
+        self.set_white_text()  # WHITE text
         text = f"{section_num}. {title}" if section_num else title
         self.cell(0, 8, text, 0, 1, 'L')
         self.ln(2)
     
     def add_metrics_row(self, metrics, card_height=28):
-        """Add a row of metric cards. metrics = [(label, value, color), ...]"""
         self.check_page_break(card_height + 5)
         
         num_cards = len(metrics)
@@ -295,21 +292,21 @@ class SEOReportPDF(FPDF):
         for i, (label, value, color) in enumerate(metrics):
             x = start_x + i * (card_width + 3)
             
-            # Card background
-            self.set_fill_theme("bg_secondary")
+            # Card background (semi-transparent dark)
+            self.set_fill_color(30, 41, 59)  # Dark card bg
             self.rect(x, start_y, card_width, card_height, 'F')
             
             # Top accent line
             self.set_fill_color(*color)
             self.rect(x, start_y, card_width, 2, 'F')
             
-            # Label
+            # Label - LIGHT GRAY
             self.set_xy(x, start_y + 5)
             self.set_font(self.selected_font, '', 7)
-            self.set_theme_colors("text_secondary")
+            self.set_light_gray_text()
             self.cell(card_width, 4, label.upper(), 0, 0, 'C')
             
-            # Value
+            # Value - COLOR
             self.set_xy(x, start_y + 12)
             self.set_font(self.selected_font, 'B', 12)
             self.set_text_color(*color)
@@ -318,7 +315,6 @@ class SEOReportPDF(FPDF):
         self.set_y(start_y + card_height + 3)
     
     def add_chart(self, image_path, width=170, height_estimate=60):
-        """Add chart image with page break check"""
         if not os.path.exists(image_path):
             return
         
@@ -328,7 +324,6 @@ class SEOReportPDF(FPDF):
         self.ln(3)
     
     def add_keywords_table(self, keywords):
-        """Compact keywords table"""
         row_height = 7
         total_height = (len(keywords) + 1) * row_height + 5
         self.check_page_break(total_height)
@@ -350,8 +345,13 @@ class SEOReportPDF(FPDF):
         self.set_font(self.selected_font, '', 8)
         for kw in keywords:
             self.set_x(x_start)
-            self.set_theme_colors("text_primary")
-            self.cell(col_widths[0], row_height, kw["keyword"][:30], 1, 0, 'L')
+            
+            # Row background
+            self.set_fill_color(30, 41, 59)
+            
+            # Keyword - WHITE
+            self.set_white_text()
+            self.cell(col_widths[0], row_height, kw["keyword"][:30], 1, 0, 'L', fill=True)
             
             # Position color
             pos = kw["position"]
@@ -361,10 +361,11 @@ class SEOReportPDF(FPDF):
                 self.set_text_color(*self.theme["warning"])
             else:
                 self.set_text_color(*self.theme["error"])
-            self.cell(col_widths[1], row_height, str(pos), 1, 0, 'C')
+            self.cell(col_widths[1], row_height, str(pos), 1, 0, 'C', fill=True)
             
-            self.set_theme_colors("text_primary")
-            self.cell(col_widths[2], row_height, fmt_int(kw["volume"]), 1, 0, 'C')
+            # Volume - WHITE
+            self.set_white_text()
+            self.cell(col_widths[2], row_height, fmt_int(kw["volume"]), 1, 0, 'C', fill=True)
             
             # Difficulty color
             diff = kw["difficulty"]
@@ -374,13 +375,12 @@ class SEOReportPDF(FPDF):
                 self.set_text_color(*self.theme["warning"])
             else:
                 self.set_text_color(*self.theme["error"])
-            self.cell(col_widths[3], row_height, f"{diff}%", 1, 0, 'C')
+            self.cell(col_widths[3], row_height, f"{diff}%", 1, 0, 'C', fill=True)
             self.ln()
         
         self.ln(3)
     
     def add_backlinks_grid(self, backlinks):
-        """Compact backlinks display"""
         self.check_page_break(45)
         
         colors = [
@@ -399,16 +399,19 @@ class SEOReportPDF(FPDF):
             x = start_x + col * (card_width + 5)
             y = start_y + row * (card_height + 3)
             
-            self.set_fill_theme("bg_secondary")
+            # Card background
+            self.set_fill_color(30, 41, 59)
             self.rect(x, y, card_width, card_height, 'F')
             self.set_fill_color(*colors[i])
             self.rect(x, y, card_width, 2, 'F')
             
+            # Label - LIGHT GRAY
             self.set_xy(x + 3, y + 5)
             self.set_font(self.selected_font, '', 6)
-            self.set_theme_colors("text_secondary")
+            self.set_light_gray_text()
             self.cell(card_width - 6, 3, label[:20], 0, 0, 'L')
             
+            # Value - COLOR
             self.set_xy(x + 3, y + 11)
             self.set_font(self.selected_font, 'B', 10)
             self.set_text_color(*colors[i])
@@ -417,20 +420,19 @@ class SEOReportPDF(FPDF):
         self.set_y(start_y + 2 * (card_height + 3) + 5)
     
     def add_technical_section(self, indexed, error_404, crawled, discovered):
-        """Compact technical SEO section"""
         self.check_page_break(40)
         
         start_y = self.get_y()
         
         # Indexed box
-        self.set_fill_theme("bg_secondary")
+        self.set_fill_color(30, 41, 59)
         self.rect(self.margin, start_y, 70, 35, 'F')
         self.set_fill_color(*self.theme["success"])
         self.rect(self.margin, start_y, 70, 3, 'F')
         
         self.set_xy(self.margin, start_y + 8)
         self.set_font(self.selected_font, '', 8)
-        self.set_theme_colors("text_secondary")
+        self.set_light_gray_text()
         self.cell(70, 4, "INDEXED PAGES", 0, 0, 'C')
         
         self.set_xy(self.margin, start_y + 16)
@@ -453,7 +455,7 @@ class SEOReportPDF(FPDF):
             
             self.set_xy(x_error + 6, y + 1)
             self.set_font(self.selected_font, '', 7)
-            self.set_theme_colors("text_secondary")
+            self.set_light_gray_text()
             self.cell(60, 4, label, 0, 0, 'L')
             
             self.set_xy(x_error + 6, y + 5)
@@ -464,32 +466,31 @@ class SEOReportPDF(FPDF):
         self.set_y(start_y + 40)
     
     def add_thank_you(self):
-        """Compact thank you section"""
         self.add_page()
         
         self.set_y(80)
         self.set_font(self.selected_font, 'B', 28)
-        self.set_theme_colors("text_primary")
+        self.set_white_text()
         self.cell(0, 15, "Thank You!", 0, 1, 'C')
         
         self.ln(8)
         self.set_font(self.selected_font, '', 10)
-        self.set_theme_colors("text_secondary")
+        self.set_light_gray_text()
         msg = "Thank you for reviewing this SEO report. We are committed to driving continuous digital growth for your business."
         self.set_x(35)
         self.multi_cell(140, 5, msg, 0, 'C')
         
         self.ln(15)
         self.set_font(self.selected_font, 'B', 12)
-        self.set_theme_colors("accent")
+        self.set_text_color(*self.theme["accent"])
         self.cell(0, 6, AGENCY_INFO["name"], 0, 1, 'C')
         self.set_font(self.selected_font, '', 9)
-        self.set_theme_colors("text_secondary")
+        self.set_light_gray_text()
         self.cell(0, 5, f"{AGENCY_INFO['website']} | {AGENCY_INFO['phone']}", 0, 1, 'C')
 
 
 # ============================================================
-# 6. PDF GENERATION FUNCTION (DYNAMIC FLOW)
+# 6. PDF GENERATION FUNCTION
 # ============================================================
 def generate_pdf(chart_paths, logo_path=None):
     pdf = SEOReportPDF(
@@ -522,14 +523,14 @@ def generate_pdf(chart_paths, logo_path=None):
     # Section 2: Revenue & Traffic
     pdf.add_section_title("Revenue & Traffic Dashboard", 2)
     pdf.add_metrics_row([
-        ("Visits", fmt_int(st.session_state.rt_visit), (15, 23, 42)),
+        ("Visits", fmt_int(st.session_state.rt_visit), (100, 200, 255)),
         ("Revenue", fmt_money(st.session_state.rt_revenue), (22, 163, 74)),
         ("Purchases", fmt_int(st.session_state.rt_ecommerce), (139, 92, 246))
     ])
     pdf.add_metrics_row([
         ("Impressions", fmt_int(st.session_state.rt_impression), (66, 133, 244)),
         ("Purchase Rev", fmt_money(st.session_state.rt_purchase_revenue), (245, 158, 11)),
-        ("Transactions", fmt_int(st.session_state.rt_transaction), (100, 116, 139))
+        ("Transactions", fmt_int(st.session_state.rt_transaction), (150, 180, 200))
     ])
     
     # Section 3: Keywords
@@ -1027,7 +1028,7 @@ st.markdown('<div class="section-header">7. Closing Page Preview</div>', unsafe_
 
 st.markdown(f"""
 <div style="text-align: center; padding: 50px 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 16px; margin: 20px 0; border: 1px solid #cbd5e1;">
-    <h1 style="color: #ffffff; font-size: 36px; margin-bottom: 20px;">Thank You!</h1>
+    <h1 style="color: #0f172a; font-size: 36px; margin-bottom: 20px;">Thank You!</h1>
     <p style="max-width:650px; margin:0 auto; color:#64748b; font-size:16px; line-height:1.8;">
         Thank you for taking the time to review this SEO performance report. We are committed to driving
         continuous digital growth, optimizing your web presence, and ensuring top-tier search engine rankings
