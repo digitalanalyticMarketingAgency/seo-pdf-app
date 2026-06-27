@@ -2,3 +2,4 @@ streamlit
 plotly
 kaleido
 fpdf2
+requests
