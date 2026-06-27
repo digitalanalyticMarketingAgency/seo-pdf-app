@@ -470,7 +470,11 @@ class SEOReportPDF(FPDF):
         self.ln(8)
         self.set_font(self.selected_font, '', 10)
         self.set_light_gray_text()
-        msg = "Thank you for reviewing this SEO report. We are committed to driving continuous digital growth for your business."
+        msg = "Thank you for reviewing your June 2026 SEO performance report.
+
+At Digital Analytic, we believe that data tells a story beyond just numbers; it is the roadmap for your brand’s digital evolution. We are deeply committed to driving your business growth by optimizing your web presence and ensuring you stay ahead in the competitive search landscape.
+
+Your goals remain at the heart of our strategy. We are constantly analyzing these insights to refine our approach and maximize your impact. If you have any questions regarding these metrics or would like to discuss our strategic roadmap for the coming month, please feel free to reach out. We are always here to support your success."
         self.set_x(35)
         self.multi_cell(140, 5, msg, 0, 'C')
         
