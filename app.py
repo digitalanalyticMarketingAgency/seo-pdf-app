@@ -530,7 +530,7 @@ def generate_pdf(chart_paths, logo_path=None):
     ])
     
     # Section 3: Keywords
-    pdf.add_section_title("Keyword Ranking Distribution", 3)
+    pdf.add_section_title("Keyword Ranking Distribution", 3, space_needed=75)
     pdf.add_chart(chart_paths['kw_chart'], width=170, height_estimate=50)
     
     # Section 4: Top Keywords Table
