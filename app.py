@@ -415,58 +415,7 @@ def build_backlink_rows_html():
 
 
 # আগের লাইনটি ডিলিট করে এটি বসান:
-def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, sc_position, rt_visit, rt_revenue, rt_impression, rt_ecommerce, rt_purchase_revenue, rt_transaction, tech_indexed, tech_404, tech_crawled_not_indexed, tech_discovered_not_indexed, sc_date, ta_click, ta_impression, ta_ctr, ta_position):
-    kw_bars_html = build_kw_bar_html()
-    backlink_rows_html = build_backlink_rows_html()
 
-    # ── Build chart images for PDF ──────────────────────────────
-    # Search Console trend chart
-    sc_pdf_fig = go.Figure()
-    sc_pdf_fig.add_trace(go.Scatter(
-        x=trend_dates, y=clicks_trend,
-        mode="lines+markers", name="Clicks",
-        line=dict(color="#4285F4", width=2), marker=dict(size=5), yaxis="y1"
-    ))
-    sc_pdf_fig.add_trace(go.Scatter(
-        x=trend_dates, y=impressions_trend,
-        mode="lines+markers", name="Impressions",
-        line=dict(color="#8E24AA", width=2), marker=dict(size=5), yaxis="y2"
-    ))
-    sc_pdf_fig.update_layout(
-        height=260, margin=dict(l=10, r=10, t=30, b=10),
-        plot_bgcolor="white", paper_bgcolor="white",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
-        yaxis=dict(tickfont=dict(color="#4285F4", size=8), showgrid=True, gridcolor="#f1f5f9"),
-        yaxis2=dict(tickfont=dict(color="#8E24AA", size=8), overlaying="y", side="right", showgrid=False),
-        xaxis=dict(tickfont=dict(size=8), showgrid=False),
-    )
-    sc_chart_html = fig_to_base64(sc_pdf_fig, width=680, height=260)
-
-    # Keyword bar chart
-    kw_pdf_fig = go.Figure(go.Bar(
-        x=kw_values, y=kw_labels, orientation="h",
-        marker_color=kw_colors, text=kw_values, textposition="outside",
-    ))
-    kw_pdf_fig.update_layout(
-        height=220, margin=dict(l=10, r=30, t=10, b=10),
-        plot_bgcolor="white", paper_bgcolor="white",
-        xaxis=dict(title="Number of Keywords", tickfont=dict(size=8)),
-        yaxis=dict(autorange="reversed", tickfont=dict(size=8)),
-    )
-    kw_chart_html = fig_to_base64(kw_pdf_fig, width=680, height=220)
-
-    # Backlink donut chart
-    bl_pdf_fig = go.Figure(go.Pie(
-        labels=bl_labels, values=bl_values, hole=0.55,
-        marker=dict(colors=bl_colors), textinfo="percent",
-    ))
-    bl_pdf_fig.update_layout(
-        height=260, margin=dict(l=10, r=10, t=10, b=10),
-        legend=dict(orientation="h", yanchor="bottom", y=-0.25, font=dict(size=8)),
-    )
-    bl_chart_html = fig_to_base64(bl_pdf_fig, width=340, height=260)
-
-    return f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
