@@ -229,7 +229,7 @@ class SEOReportPDF(FPDF):
         # Title
         self.set_y(y)
         self.set_font(self.selected_font, 'B', 26)
-        self.set_theme_colors("text_primary")
+        232: self.set_text_color(255, 255, 255)
         self.multi_cell(0, 11, report_title, 0, 'C')
         
         # Decorative line
