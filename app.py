@@ -538,10 +538,10 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 <head>
 <meta charset="UTF-8">
 <style>
-    /* জিরো মার্জিন এবং ফুল-পেজ ব্যাকগ্রাউন্ড */
-    @page {{ size: A4; margin: 0; }} 
+    /* পিডিএফ পেজ সেটিংস */
+    @page { size: A4; margin: 0; } 
     
-    body {{ 
+    body { 
         font-family: 'Segoe UI', Arial, sans-serif; 
         margin: 0; 
         padding: 0; 
@@ -550,17 +550,13 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         background-image: url('https://raw.githubusercontent.com/digitalanalyticMarketingAgency/seo-pdf-app/main/a4.png');
         background-size: 210mm 297mm;
         background-repeat: repeat; 
-        padding-bottom: 80px; /* ফুটার ওভারল্যাপ সলভ */
-    }}
+    }
     
-    /* সেফ জোন */
-    .main-container {{ 
-        padding: 40px 35px 30px 35px; 
-        box-sizing: border-box;
-    }}
+    /* কন্টেন্ট কন্টেইনার */
+    .main-container { padding: 40px 35px 80px 35px; }
     
-    /* হেডার */
-    .header-banner {{ 
+    /* হেডার সেকশন */
+    .header-banner { 
         background-color: rgba(19, 17, 28, 0.85); 
         border: 1px solid rgba(139, 92, 246, 0.3); 
         color: #ffffff; 
@@ -569,120 +565,67 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         border-radius: 12px; 
         margin-bottom: 30px; 
         page-break-inside: avoid;
-    }}
-    .header-title {{ font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; letter-spacing: 1px; color: #ffffff; }}
-    .header-subtitle {{ font-size: 12pt; color: #e2e8f0; margin-top: 10px; font-weight: 500; }}
+    }
+    .header-title { font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; }
     
-    /* সেকশন হেডিং - পেজ ব্রেক ফিক্স */
-    h2 {{ 
+    /* সেকশন হেডিং */
+    h2 { 
         font-size: 16pt; 
         color: #ffffff; 
-        margin-top: 35px; 
+        margin-top: 30px; 
         margin-bottom: 20px; 
         border-bottom: 1px solid rgba(255,255,255,0.1);
         padding-bottom: 10px;
         page-break-after: avoid; 
-        page-break-inside: avoid;
-    }}
+    }
     
-    /* গ্রিড এলাইনমেন্ট ফিক্স (Flexbox-এর বদলে Inline-block) */
-    .grid {{ 
-        display: block; 
-        width: 100%; 
-        margin-bottom: 25px; 
-        text-align: center; /* কার্ডগুলোকে সেন্টারে রাখতে */
-        page-break-inside: avoid; 
-    }}
-    
-    /* কার্ডের ভার্টিক্যাল সেন্টারিং ফিক্স */
-    .card {{ 
-        display: inline-block; 
-        width: calc(32% - 22px); /* ৩টি কার্ড পাশাপাশি নিখুঁতভাবে বসবে */
-        margin: 10px; 
-        vertical-align: top; 
+    /* পিডিএফ-এর জন্য নিরাপদ গ্রিড সিস্টেম (Table Layout) */
+    .grid { display: table; width: 100%; border-spacing: 15px; margin-bottom: 20px; }
+    .card { 
+        display: table-cell; 
+        width: 33%; 
         background-color: rgba(17, 24, 39, 0.85); 
         border: 1px solid rgba(255,255,255,0.05); 
         border-top: 2px solid #8b5cf6; 
         border-radius: 12px; 
-        padding: 30px 10px; /* ভার্টিক্যাল ব্যালেন্স */
-        box-sizing: border-box;
+        padding: 25px 10px; 
+        text-align: center;
         page-break-inside: avoid;
-    }}
-    .label {{ font-size: 9pt; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; display: block; }}
-    .value {{ font-size: 22pt; font-weight: 800; color: #ffffff; display: block; }}
+    }
+    .label { font-size: 9pt; color: #9ca3af; text-transform: uppercase; margin-bottom: 8px; display: block; }
+    .value { font-size: 20pt; font-weight: 800; color: #ffffff; display: block; }
     
-    /* চার্টের ওভারল্যাপ এবং সাইজ ফিক্স */
-    img {{ 
-        background-color: #ffffff; 
-        border: 5px solid rgba(17, 24, 39, 0.95); 
-        border-radius: 12px; 
-        padding: 15px; 
+    /* চার্ট স্টাইল */
+    img { 
         max-width: 90%; 
-        max-height: 310px; /* বিশাল ডেড স্পেস কমানো হয়েছে */
         display: block; 
-        margin: 10px auto 25px auto; 
-        object-fit: contain; 
-        page-break-inside: avoid;
-    }}
-
-    /* ব্রোকেন লোগো হাইড */
-    img[alt*="logo"], .footer img, img[src*="logo"] {{
-        display: none !important;
-    }}
+        margin: 10px auto; 
+        border: 5px solid #1f2937; 
+        border-radius: 12px; 
+        page-break-inside: avoid; 
+    }
     
-    /* ওয়ার্নিং বক্সগুলোর গ্রিড ব্যালেন্স ফিক্স */
-    .error-box, .warn-box {{ 
-        display: block;
-        width: 90%;
-        margin: 10px auto;
+    /* ওয়ার্নিং বক্স */
+    .error-box, .warn-box { 
+        display: block; 
+        width: 95%; 
+        margin: 10px auto; 
+        padding: 15px; 
+        border-radius: 8px; 
         background-color: rgba(69, 10, 10, 0.85); 
         border-left: 5px solid #ef4444; 
-        border-radius: 8px; 
-        padding: 15px; 
-        color: #fecaca; 
-        font-weight: 600; 
         page-break-inside: avoid; 
-        box-sizing: border-box;
-        text-align: left;
-    }}
-    .warn-box {{ background-color: rgba(66, 32, 6, 0.85); border-left-color: #f59e0b; color: #fde68a; }}
+    }
     
-    /* ব্যাকলিংক টেবিল */
-    table {{
-        width: 100%;
-        border-collapse: collapse;
-        background-color: rgba(17, 24, 39, 0.85);
-        border-radius: 12px;
-        margin-bottom: 25px;
-        color: #e2e8f0;
-        page-break-inside: avoid;
-    }}
-    th, td {{ padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; }}
-    td:last-child {{ font-weight: bold; color: #ffffff; text-align: right; }}
-
-    /* ফুটার ডুপ্লিকেশন বাগ ফিক্স (Z-index এবং important যুক্ত করা হয়েছে) */
-    .footer {{ 
-        position: fixed !important; 
-        bottom: 15px !important; 
-        left: 0; 
-        right: 0; 
+    /* ফুটার ফিক্স (নিরাপদ অবস্থান) */
+    .footer { 
+        position: absolute; 
+        bottom: 20px; 
+        width: 100%; 
         text-align: center; 
         font-size: 10pt; 
         color: #9ca3af; 
-        background: transparent; 
-        border: none; 
-        z-index: 1000;
-        page-break-inside: avoid;
-    }}
-
-    /* থ্যাংক ইউ পেজ ফিক্স */
-    .thankyou {{ 
-        text-align: center;
-        padding: 80px 20px;
-        page-break-inside: avoid;
-        margin-top: 40px;
-    }}
-    .thankyou h2, .thankyou p, p {{ color: #ffffff !important; page-break-inside: avoid; }}
+    }
 </style>
 </head>
 <body>
