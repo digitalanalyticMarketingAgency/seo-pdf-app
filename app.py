@@ -9,6 +9,7 @@ import datetime
 import random
 import tempfile
 import os
+import requests
 from fpdf import FPDF
 
 # ============================================================
@@ -22,7 +23,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# 2. THEME CONFIGURATION
+# 2. THEME & AGENCY CONFIGURATION
 # ============================================================
 THEMES = {
     "Light": {
@@ -53,7 +54,8 @@ AGENCY_INFO = {
     "name": "Digital Analytic",
     "website": "digital-analytic.com",
     "phone": "+8801940222254",
-    "email": "digitalanalyticofficial@gmail.com"
+    "email": "digitalanalyticofficial@gmail.com",
+    "logo_url": "https://github.com/digitalanalyticMarketingAgency/seo-pdf-app/blob/main/digital-analytic-logo.png?raw=true"
 }
 
 # ============================================================
@@ -65,7 +67,6 @@ def init_session_state():
         "client_website": "",
         "report_title": "Monthly SEO Performance Report",
         "report_description": "",
-        "uploaded_logo": None,
         "selected_theme": "Light",
         "selected_font": "Helvetica",
         "report_date": datetime.date.today().strftime("%B %Y"),
@@ -141,7 +142,6 @@ def calc_growth(current, previous):
     return ((current - previous) / previous) * 100
 
 def growth_indicator(growth, for_pdf=False):
-    """Growth indicator - use for_pdf=True for PDF generation"""
     if growth > 0:
         if for_pdf:
             return f"+{growth:.1f}%", "#16a34a"
@@ -154,6 +154,19 @@ def growth_indicator(growth, for_pdf=False):
         if for_pdf:
             return "0%", "#64748b"
         return "→ 0%", "#64748b"
+
+def download_agency_logo(tmpdir):
+    """Download agency logo from URL and save to temp directory"""
+    try:
+        response = requests.get(AGENCY_INFO["logo_url"], timeout=10)
+        if response.status_code == 200:
+            logo_path = os.path.join(tmpdir, "agency_logo.png")
+            with open(logo_path, "wb") as f:
+                f.write(response.content)
+            return logo_path
+    except Exception as e:
+        st.warning(f"Could not download logo: {e}")
+    return None
 
 
 # ============================================================
@@ -171,14 +184,12 @@ class SEOReportPDF(FPDF):
         self.usable_height = self.page_height - 50
         
     def header(self):
-        # Background image on EVERY page
         if os.path.exists('a4.png'):
             self.image('a4.png', 0, 0, 210, 297)
         
-        # Compact header (only after cover page)
         if self.page_no() > 1:
             self.set_font(self.selected_font, 'B', 9)
-            self.set_text_color(200, 200, 200)  # Light gray for header
+            self.set_text_color(200, 200, 200)
             self.set_xy(self.margin, 8)
             self.cell(0, 5, AGENCY_INFO["name"], 0, 0, 'L')
             self.cell(0, 5, st.session_state.report_date, 0, 0, 'R')
@@ -188,7 +199,7 @@ class SEOReportPDF(FPDF):
     def footer(self):
         self.set_y(-15)
         self.set_font(self.selected_font, '', 7)
-        self.set_text_color(180, 180, 180)  # Light gray
+        self.set_text_color(180, 180, 180)
         footer_text = f"{AGENCY_INFO['website']} | {AGENCY_INFO['phone']}"
         self.cell(0, 4, footer_text, 0, 0, 'C')
         self.set_font(self.selected_font, 'B', 8)
@@ -206,11 +217,9 @@ class SEOReportPDF(FPDF):
         return False
     
     def set_white_text(self):
-        """Set text color to white"""
         self.set_text_color(255, 255, 255)
     
     def set_light_gray_text(self):
-        """Set text color to light gray"""
         self.set_text_color(200, 200, 200)
         
     def set_fill_theme(self, color_type):
@@ -223,12 +232,13 @@ class SEOReportPDF(FPDF):
         self.set_fill_color(*self.theme["accent"])
         self.rect(0, 0, 210, 6, 'F')
         
+        # Agency Logo (always shown)
         y = 45
         if logo_path and os.path.exists(logo_path):
-            self.image(logo_path, x=75, y=35, w=60)
+            self.image(logo_path, x=65, y=35, w=80)
             y = 105
         
-        # Title - WHITE
+        # Title
         self.set_y(y)
         self.set_font(self.selected_font, 'B', 26)
         self.set_white_text()
@@ -276,7 +286,7 @@ class SEOReportPDF(FPDF):
         self.rect(self.margin, self.get_y(), 3, 8, 'F')
         self.set_x(self.margin + 6)
         self.set_font(self.selected_font, 'B', 12)
-        self.set_white_text()  # WHITE text
+        self.set_white_text()
         text = f"{section_num}. {title}" if section_num else title
         self.cell(0, 8, text, 0, 1, 'L')
         self.ln(2)
@@ -292,21 +302,17 @@ class SEOReportPDF(FPDF):
         for i, (label, value, color) in enumerate(metrics):
             x = start_x + i * (card_width + 3)
             
-            # Card background (semi-transparent dark)
-            self.set_fill_color(30, 41, 59)  # Dark card bg
+            self.set_fill_color(30, 41, 59)
             self.rect(x, start_y, card_width, card_height, 'F')
             
-            # Top accent line
             self.set_fill_color(*color)
             self.rect(x, start_y, card_width, 2, 'F')
             
-            # Label - LIGHT GRAY
             self.set_xy(x, start_y + 5)
             self.set_font(self.selected_font, '', 7)
             self.set_light_gray_text()
             self.cell(card_width, 4, label.upper(), 0, 0, 'C')
             
-            # Value - COLOR
             self.set_xy(x, start_y + 12)
             self.set_font(self.selected_font, 'B', 12)
             self.set_text_color(*color)
@@ -332,7 +338,6 @@ class SEOReportPDF(FPDF):
         headers = ["Keyword", "Pos", "Volume", "Diff"]
         x_start = self.margin + 5
         
-        # Header
         self.set_fill_color(*self.theme["accent"])
         self.set_text_color(255, 255, 255)
         self.set_font(self.selected_font, 'B', 8)
@@ -341,19 +346,15 @@ class SEOReportPDF(FPDF):
             self.cell(col_widths[i], row_height, header, 1, 0, 'C', fill=True)
         self.ln()
         
-        # Rows
         self.set_font(self.selected_font, '', 8)
         for kw in keywords:
             self.set_x(x_start)
             
-            # Row background
             self.set_fill_color(30, 41, 59)
             
-            # Keyword - WHITE
             self.set_white_text()
             self.cell(col_widths[0], row_height, kw["keyword"][:30], 1, 0, 'L', fill=True)
             
-            # Position color
             pos = kw["position"]
             if pos <= 10:
                 self.set_text_color(*self.theme["success"])
@@ -363,11 +364,9 @@ class SEOReportPDF(FPDF):
                 self.set_text_color(*self.theme["error"])
             self.cell(col_widths[1], row_height, str(pos), 1, 0, 'C', fill=True)
             
-            # Volume - WHITE
             self.set_white_text()
             self.cell(col_widths[2], row_height, fmt_int(kw["volume"]), 1, 0, 'C', fill=True)
             
-            # Difficulty color
             diff = kw["difficulty"]
             if diff <= 40:
                 self.set_text_color(*self.theme["success"])
@@ -399,19 +398,16 @@ class SEOReportPDF(FPDF):
             x = start_x + col * (card_width + 5)
             y = start_y + row * (card_height + 3)
             
-            # Card background
             self.set_fill_color(30, 41, 59)
             self.rect(x, y, card_width, card_height, 'F')
             self.set_fill_color(*colors[i])
             self.rect(x, y, card_width, 2, 'F')
             
-            # Label - LIGHT GRAY
             self.set_xy(x + 3, y + 5)
             self.set_font(self.selected_font, '', 6)
             self.set_light_gray_text()
             self.cell(card_width - 6, 3, label[:20], 0, 0, 'L')
             
-            # Value - COLOR
             self.set_xy(x + 3, y + 11)
             self.set_font(self.selected_font, 'B', 10)
             self.set_text_color(*colors[i])
@@ -424,7 +420,6 @@ class SEOReportPDF(FPDF):
         
         start_y = self.get_y()
         
-        # Indexed box
         self.set_fill_color(30, 41, 59)
         self.rect(self.margin, start_y, 70, 35, 'F')
         self.set_fill_color(*self.theme["success"])
@@ -440,7 +435,6 @@ class SEOReportPDF(FPDF):
         self.set_text_color(*self.theme["success"])
         self.cell(70, 10, fmt_int(indexed), 0, 0, 'C')
         
-        # Errors
         x_error = self.margin + 80
         errors = [
             ("404 Errors", error_404, self.theme["error"]),
@@ -498,7 +492,6 @@ def generate_pdf(chart_paths, logo_path=None):
         font=st.session_state.selected_font
     )
     
-    # Cover Page
     pdf.add_cover_page(
         logo_path=logo_path,
         client_name=st.session_state.client_name,
@@ -507,7 +500,6 @@ def generate_pdf(chart_paths, logo_path=None):
         report_description=st.session_state.report_description
     )
     
-    # Start content pages
     pdf.add_page()
     
     # Section 1: Search Console
@@ -572,7 +564,6 @@ def generate_pdf(chart_paths, logo_path=None):
         ("Position", f"{st.session_state.ta_position:.2f}", (245, 158, 11))
     ])
     
-    # Thank You Page
     pdf.add_thank_you()
     
     return bytes(pdf.output())
@@ -693,10 +684,10 @@ st.markdown("""
 
 
 # ============================================================
-# 8. SIDEBAR
+# 8. SIDEBAR (LOGO UPLOAD REMOVED)
 # ============================================================
 with st.sidebar:
-    st.image("https://raw.githubusercontent.com/digitalanalyticMarketingAgency/seo-pdf-app/main/digital-analytic-logo.png", width=180)
+    st.image(AGENCY_INFO["logo_url"], width=180)
     
     st.markdown("---")
     st.header("📋 Report Settings")
@@ -711,11 +702,6 @@ with st.sidebar:
     
     st.text_input("Client Name", value=st.session_state.client_name, placeholder="ABC Company Ltd.", key="client_name")
     st.text_input("Client Website", value=st.session_state.client_website, placeholder="www.example.com", key="client_website")
-    
-    uploaded_logo = st.file_uploader("Upload Client Logo", type=["png", "jpg", "jpeg"], key="logo_uploader")
-    if uploaded_logo:
-        st.session_state.uploaded_logo = uploaded_logo
-        st.image(uploaded_logo, width=100)
     
     st.markdown("---")
     st.header("🎨 Theme & Style")
@@ -1043,7 +1029,7 @@ st.markdown(f"""
 st.markdown("---")
 
 # ============================================================
-# 10. PDF EXPORT
+# 10. PDF EXPORT (AUTOMATIC AGENCY LOGO)
 # ============================================================
 st.markdown('<div class="section-header">📥 Export Report</div>', unsafe_allow_html=True)
 
@@ -1057,6 +1043,7 @@ with col_download:
     if st.button("🚀 Generate & Download PDF", type="primary", use_container_width=True):
         with st.spinner("Generating professional PDF report..."):
             with tempfile.TemporaryDirectory() as tmpdir:
+                # Generate charts
                 sc_chart_path = os.path.join(tmpdir, "sc_chart.png")
                 kw_chart_path = os.path.join(tmpdir, "kw_chart.png")
                 bl_chart_path = os.path.join(tmpdir, "bl_chart.png")
@@ -1071,12 +1058,10 @@ with col_download:
                     'bl_chart': bl_chart_path
                 }
                 
-                logo_path = None
-                if st.session_state.uploaded_logo:
-                    logo_path = os.path.join(tmpdir, "logo.png")
-                    with open(logo_path, "wb") as f:
-                        f.write(st.session_state.uploaded_logo.getvalue())
+                # Download agency logo automatically
+                logo_path = download_agency_logo(tmpdir)
                 
+                # Generate PDF
                 pdf_bytes = generate_pdf(chart_paths, logo_path)
                 
                 st.success("✅ PDF generated successfully!")
