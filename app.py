@@ -353,7 +353,6 @@ with bl_col1:
         with card_cols[i % 2]:
             st.markdown(f"""<div class="backlink-card"><div class="label">{label}</div>
             <div class="value">{fmt_compact(value)}</div></div>""", unsafe_allow_html=True)
-
 with bl_col2:
     donut_fig = go.Figure(go.Pie(
         labels=bl_labels,
@@ -362,13 +361,14 @@ with bl_col2:
         marker=dict(colors=bl_colors),
         textinfo="percent",
     ))
-donut_fig.update_layout(
-            height=320,
-            margin=dict(l=20, r=20, t=20, b=90), # b=90 করা হয়েছে যাতে লেজেন্ডের জন্য নিচে পর্যাপ্ত জায়গা থাকে
-            legend=dict(orientation="h", yanchor="bottom", y=-0.3) # লেজেন্ডটিকে আরও নিচে সুন্দরভাবে সাজানো হয়েছে
-        )
+    
+    donut_fig.update_layout(
+        height=320,
+        margin=dict(l=20, r=20, t=20, b=90),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.3)
+    )
+    
     st.plotly_chart(donut_fig, use_container_width=True)
-
 st.divider()
 
 # ============================================================
