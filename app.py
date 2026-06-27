@@ -111,6 +111,7 @@ def init_session_state():
         "tech_404": 3,
         "tech_crawled_not_indexed": 42,
         "tech_discovered_not_indexed": 18,
+        "gsc_graph_upload": None,
     }
     
     for key, value in defaults.items():
@@ -716,6 +717,7 @@ with st.sidebar:
     
     st.markdown("---")
     st.header("1️⃣ Search Console - Current")
+    st.file_uploader("Upload GSC Graph (1600x600)", type=['png', 'jpg', 'jpeg'], key="gsc_graph_upload")
     
     st.number_input("Total Clicks", min_value=0, key="sc_clicks")
     st.number_input("Total Impressions", min_value=0, key="sc_impressions")
@@ -820,50 +822,14 @@ with c4:
     st.markdown(render_metric_card("Average Position", f"{st.session_state.sc_position:.1f}", pos_growth, "#f59e0b"), unsafe_allow_html=True)
 
 # Trend Chart
-_seed = int(st.session_state.sc_clicks + st.session_state.sc_impressions)
-_rng = random.Random(_seed)
-
-def _trend(final_val, n=7, volatility=0.12):
-    base = final_val / n
-    days = []
-    for i in range(n):
-        noise = _rng.uniform(1 - volatility, 1 + volatility)
-        drift = 0.85 + 0.15 * (i / (n - 1))
-        days.append(max(0, round(base * drift * noise)))
-    scale = final_val / max(sum(days), 1)
-    days = [round(d * scale) for d in days]
-    days[-1] = final_val
-    return days
-
-today = datetime.date.today()
-trend_dates = [(today - datetime.timedelta(days=6 - i)).strftime("%b %d") for i in range(7)]
-clicks_trend = _trend(st.session_state.sc_clicks)
-impressions_trend = _trend(st.session_state.sc_impressions)
-
-sc_fig = go.Figure()
-sc_fig.add_trace(go.Scatter(
-    x=trend_dates, y=clicks_trend,
-    mode="lines+markers", name="Clicks",
-    line=dict(color="#4285F4", width=3),
-    marker=dict(size=8), yaxis="y1"
-))
-sc_fig.add_trace(go.Scatter(
-    x=trend_dates, y=impressions_trend,
-    mode="lines+markers", name="Impressions",
-    line=dict(color="#8E24AA", width=3),
-    marker=dict(size=8), yaxis="y2"
-))
-sc_fig.update_layout(
-    height=350,
-    margin=dict(l=60, r=60, t=40, b=40),
-    plot_bgcolor="white",
-    paper_bgcolor="white",
-    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
-    yaxis=dict(title=dict(text="Clicks", font=dict(color="#4285F4")), tickfont=dict(color="#4285F4"), showgrid=True, gridcolor="#f1f5f9"),
-    yaxis2=dict(title=dict(text="Impressions", font=dict(color="#8E24AA")), tickfont=dict(color="#8E24AA"), overlaying="y", side="right", showgrid=False),
-    xaxis=dict(showgrid=False)
-)
-st.plotly_chart(sc_fig, use_container_width=True)
+# ==========================================
+# GSC Graph Image Display (Replaces Fake Chart)
+# ==========================================
+st.markdown("<br>", unsafe_allow_html=True)
+if st.session_state.gsc_graph_upload is not None:
+    st.image(st.session_state.gsc_graph_upload, use_container_width=True, caption="Google Search Console Performance")
+else:
+    st.info("📌 Please upload the GSC Graph screenshot (Recommended size: 1600x600 pixels) from the sidebar.")
 
 st.markdown("---")
 
@@ -1047,12 +1013,18 @@ with col_download:
     if st.button("🚀 Generate & Download PDF", type="primary", use_container_width=True):
         with st.spinner("Generating professional PDF report..."):
             with tempfile.TemporaryDirectory() as tmpdir:
-                # Generate charts
+                # Generate charts and handle uploaded GSC image
                 sc_chart_path = os.path.join(tmpdir, "sc_chart.png")
+                if st.session_state.gsc_graph_upload is not None:
+                    with open(sc_chart_path, "wb") as f:
+                        f.write(st.session_state.gsc_graph_upload.getbuffer())
+                else:
+                    sc_chart_path = "" # If no image is uploaded
+                
                 kw_chart_path = os.path.join(tmpdir, "kw_chart.png")
                 bl_chart_path = os.path.join(tmpdir, "bl_chart.png")
                 
-                sc_fig.write_image(sc_chart_path, width=800, height=300, scale=2)
+                # We only write kw_fig and donut_fig now, sc_fig is gone
                 kw_fig.write_image(kw_chart_path, width=800, height=280, scale=2)
                 donut_fig.write_image(bl_chart_path, width=400, height=350, scale=2)
                 
