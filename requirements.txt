@@ -2,3 +2,4 @@ streamlit
 plotly
 weasyprint
 kaleido
+fpdf2
