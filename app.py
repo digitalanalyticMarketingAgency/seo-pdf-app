@@ -279,8 +279,8 @@ class SEOReportPDF(FPDF):
         self.set_text_color(*self.theme["accent"])
         self.cell(0, 7, AGENCY_INFO["name"], 0, 1, 'C')
     
-    def add_section_title(self, title, section_num=None):
-        self.check_page_break(15)
+    def add_section_title(self, title, section_num=None, space_needed=15):
+        self.check_page_break(space_needed)
         self.ln(3)
         self.set_fill_color(*self.theme["accent"])
         self.rect(self.margin, self.get_y(), 3, 8, 'F')
