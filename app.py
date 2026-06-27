@@ -553,10 +553,10 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     }}
     
     /* কন্টেন্ট কন্টেইনার */
-    .main-container { padding: 40px 35px 80px 35px; }
+    .main-container {{ padding: 40px 35px 80px 35px; }}
     
     /* হেডার সেকশন */
-    .header-banner { 
+    .header-banner {{ 
         background-color: rgba(19, 17, 28, 0.85); 
         border: 1px solid rgba(139, 92, 246, 0.3); 
         color: #ffffff; 
@@ -565,8 +565,8 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         border-radius: 12px; 
         margin-bottom: 30px; 
         page-break-inside: avoid;
-    }
-    .header-title { font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; }
+    }}
+    .header-title { font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; }}
     
     /* সেকশন হেডিং */
     h2 { 
@@ -577,11 +577,11 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         border-bottom: 1px solid rgba(255,255,255,0.1);
         padding-bottom: 10px;
         page-break-after: avoid; 
-    }
+    }}
     
     /* পিডিএফ-এর জন্য নিরাপদ গ্রিড সিস্টেম (Table Layout) */
-    .grid { display: table; width: 100%; border-spacing: 15px; margin-bottom: 20px; }
-    .card { 
+    .grid { display: table; width: 100%; border-spacing: 15px; margin-bottom: 20px; }}
+    .card {{ 
         display: table-cell; 
         width: 33%; 
         background-color: rgba(17, 24, 39, 0.85); 
@@ -591,9 +591,9 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         padding: 25px 10px; 
         text-align: center;
         page-break-inside: avoid;
-    }
+    }}
     .label { font-size: 9pt; color: #9ca3af; text-transform: uppercase; margin-bottom: 8px; display: block; }
-    .value { font-size: 20pt; font-weight: 800; color: #ffffff; display: block; }
+    .value { font-size: 20pt; font-weight: 800; color: #ffffff; display: block; }}
     
     /* চার্ট স্টাইল */
     img { 
@@ -606,7 +606,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     }
     
     /* ওয়ার্নিং বক্স */
-    .error-box, .warn-box { 
+    .error-box, .warn-box {{ 
         display: block; 
         width: 95%; 
         margin: 10px auto; 
@@ -615,17 +615,17 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         background-color: rgba(69, 10, 10, 0.85); 
         border-left: 5px solid #ef4444; 
         page-break-inside: avoid; 
-    }
+    }}
     
     /* ফুটার ফিক্স (নিরাপদ অবস্থান) */
-    .footer { 
+    .footer {{ 
         position: absolute; 
         bottom: 20px; 
         width: 100%; 
         text-align: center; 
         font-size: 10pt; 
         color: #9ca3af; 
-    }
+    }}
 </style>
 </head>
 <body>
