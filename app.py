@@ -1,127 +1,58 @@
+from fpdf import FPDF
+import io
 import streamlit as st
 import plotly.graph_objects as go
 import plotly.io as pio
 import datetime
 import random
 import base64
-from weasyprint import HTML
-agency_name = "Digital Analytic"
-import base64
-from weasyprint import HTML
-
-agency_name = "Digital Analytic"  # এই লাইনটি এখানে বসান
-
-st.set_page_config(page_title="SEO Performance Report Generator", page_icon="📈", layout="wide")
-
-st.set_page_config(page_title="SEO Performance Report Generator", page_icon="📈", layout="wide")
 
 # ============================================================
-# CUSTOM CSS
+# PDF ENGINE (FPDF2 CLASS & FUNCTION)
 # ============================================================
-# এটি ২০ নম্বর লাইনের জায়গায় বসান (এর আগে কোনো স্পেস দেবেন না)
+class PDF(FPDF):
+    def header(self):
+        # Background ইমেজ (A4 সাইজ)
+        self.image('a4.png', 0, 0, 210, 297)
+
+def create_pdf(sc_clicks, sc_impressions, sc_ctr, sc_position):
+    pdf = PDF(orientation='P', unit='mm', format='A4')
+    pdf.add_page()
+    
+    # হেডার
+    pdf.set_font("Arial", 'B', 24)
+    pdf.set_text_color(255, 255, 255)
+    pdf.cell(0, 40, 'SEO PERFORMANCE REPORT', 0, 1, 'C')
+    
+    # ডেটা (কার্ড স্টাইলে)
+    pdf.set_font("Arial", 'B', 12)
+    pdf.text(20, 60, f"Clicks: {sc_clicks} | Impr: {sc_impressions} | CTR: {sc_ctr}% | Pos: {sc_position}")
+    
+    # এখানে আমরা চার্টটি বসাচ্ছি (পিক্সেল পজিশন: x=10, y=80, width=190mm)
+    pdf.image('sc_chart.png', x=10, y=80, w=190)
+    
+    return pdf.output(dest='S').encode('latin-1')
+
+
+# ============================================================
+# 2. APP CONFIG & CSS (STREAMLIT UI)
+# ============================================================
+st.set_page_config(page_title="SEO Performance Report Generator", page_icon="📈", layout="wide")
+
 st.markdown("""
 <style>
-   /* সাইডবার ডিজাইন */
-    [data-testid="stSidebar"] {
-        background-color: #0f172a !important;
-    }
+    [data-testid="stSidebar"] { background-color: #0f172a !important; }
+    [data-testid="stSidebar"] div[data-testid="stSidebarContent"] { background-color: #0f172a !important; }
+    [data-testid="stSidebar"] * { color: #ffffff !important; }
     
-    [data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
-        background-color: #0f172a !important;
-    }
-
-    [data-testid="stSidebar"] * {
-        color: #ffffff !important;
-    }
-    .stTextInput input, .stNumberInput input {
-        color: black !important;
-    }
-
-    /* Metric Cards */
-    .metric-card {{
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        padding: 18px 20px;
-        text-align: center;
-    }}
-    .metric-card .label {{
-        font-size: 11px;
-        font-weight: 700;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }}
-    .metric-card .value {{
-        font-size: 26px;
-        font-weight: 800;
-        color: #0f172a;
-        margin-top: 6px;
-    }}
-
-    /* Backlink Cards */
-    .backlink-card {{
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        padding: 16px;
-        text-align: center;
-        margin-bottom: 12px;
-    }}
-    .backlink-card .label {{
-        font-size: 10px;
-        font-weight: 700;
-        color: #64748b;
-        text-transform: uppercase;
-    }}
-    .backlink-card .value {{
-        font-size: 20px;
-        font-weight: 800;
-        color: #0f172a;
-    }}
-
-    /* Traffic Summary & Others */
-    .traffic-summary-label {{
-        font-size: 13px;
-        color: #64748b;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }}
-    .traffic-summary-value {{
-        font-size: 40px;
-        font-weight: 900;
-        color: #0f172a;
-        line-height: 1.2;
-    }}
-    .error-row {{
-        background: #fef2f2;
-        border-left: 5px solid #ef4444;
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }}
-    .warn-row {{
-        background: #fffbeb;
-        border-left: 5px solid #f59e0b;
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }}
-    .thankyou-box {{
-        text-align: center;
-        padding: 60px 20px;
-    }}
-    section[data-testid="stSidebar"] {{
-        background-color: #0f172a;
-    }}
+    .metric-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px 20px; text-align: center; }
+    .metric-card .label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+    .metric-card .value { font-size: 26px; font-weight: 800; color: #0f172a; margin-top: 6px; }
 </style>
 """, unsafe_allow_html=True)
 
 st.title("📈 SEO Performance Report Generator")
-st.caption("Manually enter your SEO data below to generate a live dashboard and export a professional PDF report.")
+st.caption("Manually enter your SEO data below to generate a live dashboard and export a professional PDF report."))
 
 # ============================================================
 # SIDEBAR — MANUAL DATA INPUT
@@ -274,6 +205,8 @@ sc_fig.update_layout(
     xaxis=dict(title=None, showgrid=False)
 )
 st.plotly_chart(sc_fig, use_container_width=True)
+# এটি চার্টটিকে ইমেজ হিসেবে সেভ করবে
+sc_fig.write_image("sc_chart.png")
 st.caption("Trend shows estimated daily distribution across the last 7 days based on your total figures. Enter per-day data for exact trends.")
 
 st.divider()
@@ -721,25 +654,18 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 
 
 st.subheader("📄 Export Report")
-if st.button("Download as PDF", type="primary", use_container_width=True):
-    with st.spinner("Building your PDF report..."):
-        try:
-            pdf_html = build_pdf_html(
-                agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, sc_position, 
-                rt_visit, rt_revenue, rt_impression, rt_ecommerce, rt_purchase_revenue, 
-                rt_transaction, tech_indexed, tech_404, tech_crawled_not_indexed, 
-                tech_discovered_not_indexed, sc_date, ta_click, ta_impression, 
-                ta_ctr, ta_position
-            )
-            pdf_bytes = HTML(string=pdf_html).write_pdf()
-            st.success("PDF generated successfully.")
-            st.download_button(
-                label="📥 Click here to download the PDF",
-                data=pdf_bytes,
-                file_name=f"{agency_name.replace(' ', '_')}_SEO_Report.pdf",
-                mime="application/pdf",
-                use_container_width=True,
-            )
+st.subheader("📥 Export Report")
+
+# পিডিএফ জেনারেট করো
+pdf_bytes = create_pdf(sc_clicks, sc_impressions, sc_ctr, sc_position)
+
+# নতুন ডাউনলোড বাটন
+st.download_button(
+    label="Download PDF Report",
+    data=pdf_bytes,
+    file_name="SEO_Report.pdf",
+    mime="application/pdf"
+)
         except Exception as e:
             st.error(f"Could not generate PDF: {e}")
             st.error(f"Could not generate PDF: {e}")
