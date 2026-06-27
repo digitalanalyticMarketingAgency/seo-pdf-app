@@ -140,13 +140,21 @@ def calc_growth(current, previous):
         return 0
     return ((current - previous) / previous) * 100
 
-def growth_indicator(growth):
+def growth_indicator(growth, for_pdf=False):
+    """Growth indicator - use for_pdf=True for PDF generation"""
     if growth > 0:
+        if for_pdf:
+            return f"+{growth:.1f}%", "#16a34a"
         return f"↑ {growth:.1f}%", "#16a34a"
     elif growth < 0:
+        if for_pdf:
+            return f"-{abs(growth):.1f}%", "#ef4444"
         return f"↓ {abs(growth):.1f}%", "#ef4444"
     else:
+        if for_pdf:
+            return "0%", "#64748b"
         return "→ 0%", "#64748b"
+
 
 # ============================================================
 # 5. PDF CLASS (FPDF2 - PROFESSIONAL)
@@ -288,7 +296,7 @@ class SEOReportPDF(FPDF):
         self.cell(width - 10, 8, str(value), 0, 0, 'C')
         
         if growth is not None:
-            indicator, ind_color = growth_indicator(growth)
+            indicator, ind_color = growth_indicator(growth, for_pdf=True)
             self.set_xy(x + 5, y + 26)
             self.set_font(self.selected_font, 'B', 9)
             self.set_text_color(*self._hex_to_rgb(ind_color))
