@@ -6,4 +6,3 @@ libjpeg-dev
 libopenjp2-7-dev
 libgl1
 chromium
-fpdf2
