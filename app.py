@@ -157,184 +157,199 @@ def growth_indicator(growth, for_pdf=False):
 
 
 # ============================================================
-# 5. PDF CLASS (FPDF2 - PROFESSIONAL)
+# ============================================================
+# 5. PDF CLASS (FPDF2 - DYNAMIC FLOW)
 # ============================================================
 class SEOReportPDF(FPDF):
     def __init__(self, theme="Light", font="Helvetica"):
         super().__init__(orientation='P', unit='mm', format='A4')
         self.theme = THEMES[theme]
         self.selected_font = font
-        self.toc_entries = []
+        self.page_width = 210
+        self.page_height = 297
+        self.margin = 15
+        self.content_width = self.page_width - (2 * self.margin)
+        self.usable_height = self.page_height - 50  # Leave space for header/footer
         
-    def set_theme_colors(self, color_type):
-        color = self.theme[color_type]
-        self.set_text_color(*color)
-        
-    def set_fill_theme(self, color_type):
-        color = self.theme[color_type]
-        self.set_fill_color(*color)
-    
     def header(self):
+        # Background image on EVERY page
+        if os.path.exists('a4.png'):
+            self.image('a4.png', 0, 0, 210, 297)
+        
+        # Compact header (only after cover page)
         if self.page_no() > 1:
-            self.set_fill_theme("bg_secondary")
-            self.rect(0, 0, 210, 20, 'F')
-            self.set_font(self.selected_font, 'B', 10)
-            self.set_theme_colors("text_secondary")
-            self.set_xy(15, 7)
-            self.cell(0, 6, AGENCY_INFO["name"], 0, 0, 'L')
-            self.set_xy(15, 7)
-            self.cell(0, 6, st.session_state.report_date, 0, 0, 'R')
-            self.ln(15)
+            self.set_font(self.selected_font, 'B', 9)
+            self.set_text_color(*self.theme["text_secondary"])
+            self.set_xy(self.margin, 8)
+            self.cell(0, 5, AGENCY_INFO["name"], 0, 0, 'L')
+            self.cell(0, 5, st.session_state.report_date, 0, 0, 'R')
+        
+        # Set starting Y position after header
+        self.set_y(20)
     
     def footer(self):
-        self.set_y(-25)
-        self.set_draw_color(*self.theme["border"])
-        self.line(15, self.get_y(), 195, self.get_y())
-        self.ln(5)
-        self.set_font(self.selected_font, '', 8)
-        self.set_theme_colors("text_secondary")
-        footer_text = f"{AGENCY_INFO['name']} | {AGENCY_INFO['website']} | {AGENCY_INFO['phone']} | {AGENCY_INFO['email']}"
-        self.cell(0, 5, footer_text, 0, 1, 'C')
-        self.set_font(self.selected_font, 'B', 9)
-        self.set_theme_colors("accent")
-        self.cell(0, 5, f"Page {self.page_no()}", 0, 0, 'C')
+        self.set_y(-15)
+        self.set_font(self.selected_font, '', 7)
+        self.set_text_color(*self.theme["text_secondary"])
+        footer_text = f"{AGENCY_INFO['website']} | {AGENCY_INFO['phone']}"
+        self.cell(0, 4, footer_text, 0, 0, 'C')
+        self.set_font(self.selected_font, 'B', 8)
+        self.set_text_color(*self.theme["accent"])
+        self.set_y(-10)
+        self.cell(0, 4, f"Page {self.page_no()}", 0, 0, 'C')
     
-    def add_cover_page(self, logo_path=None, client_name="", client_website="", 
-                       report_title="", report_description=""):
+    def get_current_y(self):
+        return self.get_y()
+    
+    def check_page_break(self, height_needed):
+        """Check if we need a new page, if yes add one"""
+        if self.get_y() + height_needed > self.usable_height:
+            self.add_page()
+            return True
+        return False
+    
+    def set_theme_colors(self, color_type):
+        self.set_text_color(*self.theme[color_type])
+        
+    def set_fill_theme(self, color_type):
+        self.set_fill_color(*self.theme[color_type])
+    
+    def add_cover_page(self, logo_path, client_name, client_website, report_title, report_description):
         self.add_page()
-        self.set_fill_theme("bg_primary")
-        self.rect(0, 0, 210, 297, 'F')
-        self.set_fill_color(*self.theme["accent"])
-        self.rect(0, 0, 210, 8, 'F')
         
+        # Accent bar
+        self.set_fill_color(*self.theme["accent"])
+        self.rect(0, 0, 210, 6, 'F')
+        
+        y = 45
         if logo_path and os.path.exists(logo_path):
-            self.image(logo_path, x=75, y=40, w=60)
-            y_start = 110
-        else:
-            y_start = 60
+            self.image(logo_path, x=75, y=35, w=60)
+            y = 105
         
-        self.set_y(y_start)
-        self.set_font(self.selected_font, 'B', 28)
+        # Title
+        self.set_y(y)
+        self.set_font(self.selected_font, 'B', 26)
         self.set_theme_colors("text_primary")
-        self.multi_cell(0, 12, report_title, 0, 'C')
+        self.multi_cell(0, 11, report_title, 0, 'C')
         
-        self.ln(5)
+        # Decorative line
         self.set_fill_color(*self.theme["accent"])
-        self.rect(70, self.get_y(), 70, 2, 'F')
+        self.rect(70, self.get_y() + 3, 70, 2, 'F')
         self.ln(15)
         
+        # Client info
         if client_name:
-            self.set_font(self.selected_font, '', 14)
+            self.set_font(self.selected_font, '', 12)
             self.set_theme_colors("text_secondary")
-            self.cell(0, 8, "Prepared for:", 0, 1, 'C')
-            self.set_font(self.selected_font, 'B', 18)
+            self.cell(0, 7, "Prepared for:", 0, 1, 'C')
+            self.set_font(self.selected_font, 'B', 16)
             self.set_theme_colors("text_primary")
-            self.cell(0, 10, client_name, 0, 1, 'C')
+            self.cell(0, 9, client_name, 0, 1, 'C')
             if client_website:
-                self.set_font(self.selected_font, '', 12)
+                self.set_font(self.selected_font, '', 11)
                 self.set_theme_colors("accent")
-                self.cell(0, 8, client_website, 0, 1, 'C')
+                self.cell(0, 7, client_website, 0, 1, 'C')
         
+        # Description
         if report_description:
-            self.ln(10)
-            self.set_font(self.selected_font, '', 11)
+            self.ln(8)
+            self.set_font(self.selected_font, '', 10)
             self.set_theme_colors("text_secondary")
             self.set_x(30)
-            self.multi_cell(150, 6, report_description, 0, 'C')
+            self.multi_cell(150, 5, report_description, 0, 'C')
         
-        self.set_y(240)
-        self.set_font(self.selected_font, '', 12)
+        # Bottom info
+        self.set_y(250)
+        self.set_font(self.selected_font, '', 11)
         self.set_theme_colors("text_secondary")
-        self.cell(0, 8, st.session_state.report_date, 0, 1, 'C')
-        self.ln(5)
-        self.set_font(self.selected_font, 'B', 14)
+        self.cell(0, 6, st.session_state.report_date, 0, 1, 'C')
+        self.set_font(self.selected_font, 'B', 12)
         self.set_theme_colors("accent")
-        self.cell(0, 8, AGENCY_INFO["name"], 0, 1, 'C')
-        self.set_font(self.selected_font, '', 10)
-        self.set_theme_colors("text_secondary")
-        self.cell(0, 6, AGENCY_INFO["website"], 0, 1, 'C')
+        self.cell(0, 7, AGENCY_INFO["name"], 0, 1, 'C')
     
-    def add_toc_entry(self, title, level=1):
-        self.toc_entries.append({"title": title, "page": self.page_no(), "level": level})
-    
-    def add_section_header(self, title, section_num=None):
-        self.add_toc_entry(title)
-        self.ln(5)
+    def add_section_title(self, title, section_num=None):
+        self.check_page_break(15)
+        self.ln(3)
         self.set_fill_color(*self.theme["accent"])
-        self.rect(15, self.get_y(), 4, 10, 'F')
-        self.set_x(22)
-        self.set_font(self.selected_font, 'B', 16)
+        self.rect(self.margin, self.get_y(), 3, 8, 'F')
+        self.set_x(self.margin + 6)
+        self.set_font(self.selected_font, 'B', 12)
         self.set_theme_colors("text_primary")
-        if section_num:
-            self.cell(0, 10, f"{section_num}. {title}", 0, 1, 'L')
-        else:
-            self.cell(0, 10, title, 0, 1, 'L')
+        text = f"{section_num}. {title}" if section_num else title
+        self.cell(0, 8, text, 0, 1, 'L')
+        self.ln(2)
+    
+    def add_metrics_row(self, metrics, card_height=28):
+        """Add a row of metric cards. metrics = [(label, value, color), ...]"""
+        self.check_page_break(card_height + 5)
+        
+        num_cards = len(metrics)
+        card_width = (self.content_width - (num_cards - 1) * 3) / num_cards
+        start_x = self.margin
+        start_y = self.get_y()
+        
+        for i, (label, value, color) in enumerate(metrics):
+            x = start_x + i * (card_width + 3)
+            
+            # Card background
+            self.set_fill_theme("bg_secondary")
+            self.rect(x, start_y, card_width, card_height, 'F')
+            
+            # Top accent line
+            self.set_fill_color(*color)
+            self.rect(x, start_y, card_width, 2, 'F')
+            
+            # Label
+            self.set_xy(x, start_y + 5)
+            self.set_font(self.selected_font, '', 7)
+            self.set_theme_colors("text_secondary")
+            self.cell(card_width, 4, label.upper(), 0, 0, 'C')
+            
+            # Value
+            self.set_xy(x, start_y + 12)
+            self.set_font(self.selected_font, 'B', 12)
+            self.set_text_color(*color)
+            self.cell(card_width, 8, str(value), 0, 0, 'C')
+        
+        self.set_y(start_y + card_height + 3)
+    
+    def add_chart(self, image_path, width=170, height_estimate=60):
+        """Add chart image with page break check"""
+        if not os.path.exists(image_path):
+            return
+        
+        self.check_page_break(height_estimate)
+        x = (self.page_width - width) / 2
+        self.image(image_path, x=x, w=width)
         self.ln(3)
     
-    def add_metric_card(self, x, y, width, label, value, growth=None, color=None):
-        self.set_fill_theme("bg_secondary")
-        self.rect(x, y, width, 35, 'F')
-        self.set_draw_color(*self.theme["border"])
-        self.rect(x, y, width, 35, 'D')
-        if color:
-            self.set_fill_color(*color)
-        else:
-            self.set_fill_color(*self.theme["accent"])
-        self.rect(x, y, width, 3, 'F')
-        
-        self.set_xy(x + 5, y + 8)
-        self.set_font(self.selected_font, '', 9)
-        self.set_theme_colors("text_secondary")
-        self.cell(width - 10, 5, label.upper(), 0, 0, 'C')
-        
-        self.set_xy(x + 5, y + 16)
-        self.set_font(self.selected_font, 'B', 16)
-        if color:
-            self.set_text_color(*color)
-        else:
-            self.set_theme_colors("text_primary")
-        self.cell(width - 10, 8, str(value), 0, 0, 'C')
-        
-        if growth is not None:
-            indicator, ind_color = growth_indicator(growth, for_pdf=True)
-            self.set_xy(x + 5, y + 26)
-            self.set_font(self.selected_font, 'B', 9)
-            self.set_text_color(*self._hex_to_rgb(ind_color))
-            self.cell(width - 10, 5, indicator, 0, 0, 'C')
-    
-    def _hex_to_rgb(self, hex_color):
-        hex_color = hex_color.lstrip('#')
-        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-    
-    def add_chart_image(self, image_path, width=180):
-        if os.path.exists(image_path):
-            x = (210 - width) / 2
-            self.image(image_path, x=x, w=width)
-            self.ln(5)
-    
     def add_keywords_table(self, keywords):
+        """Compact keywords table"""
+        row_height = 7
+        total_height = (len(keywords) + 1) * row_height + 5
+        self.check_page_break(total_height)
+        
+        col_widths = [65, 25, 30, 30]
+        headers = ["Keyword", "Pos", "Volume", "Diff"]
+        x_start = self.margin + 5
+        
+        # Header
         self.set_fill_color(*self.theme["accent"])
         self.set_text_color(255, 255, 255)
-        self.set_font(self.selected_font, 'B', 10)
-        col_widths = [70, 30, 35, 35]
-        headers = ["Keyword", "Position", "Volume", "Difficulty"]
-        x_start = 20
+        self.set_font(self.selected_font, 'B', 8)
         self.set_x(x_start)
         for i, header in enumerate(headers):
-            self.cell(col_widths[i], 10, header, 1, 0, 'C', fill=True)
+            self.cell(col_widths[i], row_height, header, 1, 0, 'C', fill=True)
         self.ln()
         
-        self.set_font(self.selected_font, '', 10)
-        fill = False
+        # Rows
+        self.set_font(self.selected_font, '', 8)
         for kw in keywords:
-            if fill:
-                self.set_fill_theme("bg_secondary")
-            else:
-                self.set_fill_theme("bg_primary")
-            self.set_theme_colors("text_primary")
             self.set_x(x_start)
-            self.cell(col_widths[0], 9, kw["keyword"][:35], 1, 0, 'L', fill=True)
+            self.set_theme_colors("text_primary")
+            self.cell(col_widths[0], row_height, kw["keyword"][:30], 1, 0, 'L')
             
+            # Position color
             pos = kw["position"]
             if pos <= 10:
                 self.set_text_color(*self.theme["success"])
@@ -342,11 +357,12 @@ class SEOReportPDF(FPDF):
                 self.set_text_color(*self.theme["warning"])
             else:
                 self.set_text_color(*self.theme["error"])
-            self.cell(col_widths[1], 9, str(pos), 1, 0, 'C', fill=True)
+            self.cell(col_widths[1], row_height, str(pos), 1, 0, 'C')
             
             self.set_theme_colors("text_primary")
-            self.cell(col_widths[2], 9, fmt_int(kw["volume"]), 1, 0, 'C', fill=True)
+            self.cell(col_widths[2], row_height, fmt_int(kw["volume"]), 1, 0, 'C')
             
+            # Difficulty color
             diff = kw["difficulty"]
             if diff <= 40:
                 self.set_text_color(*self.theme["success"])
@@ -354,117 +370,122 @@ class SEOReportPDF(FPDF):
                 self.set_text_color(*self.theme["warning"])
             else:
                 self.set_text_color(*self.theme["error"])
-            self.cell(col_widths[3], 9, f"{diff}%", 1, 0, 'C', fill=True)
+            self.cell(col_widths[3], row_height, f"{diff}%", 1, 0, 'C')
             self.ln()
-            fill = not fill
+        
+        self.ln(3)
     
-    def add_backlink_summary(self, backlinks):
-        col_width = 55
-        row_height = 25
-        x_start = 20
-        y_start = self.get_y() + 5
+    def add_backlinks_grid(self, backlinks):
+        """Compact backlinks display"""
+        self.check_page_break(45)
+        
         colors = [
             (37, 99, 235), (139, 92, 246), (22, 163, 74),
             (245, 158, 11), (239, 68, 68), (6, 182, 212)
         ]
+        
+        card_width = 55
+        card_height = 20
+        start_x = self.margin + 5
+        start_y = self.get_y()
+        
         for i, (label, value) in enumerate(backlinks.items()):
             col = i % 3
             row = i // 3
-            x = x_start + (col * (col_width + 5))
-            y = y_start + (row * (row_height + 5))
+            x = start_x + col * (card_width + 5)
+            y = start_y + row * (card_height + 3)
             
             self.set_fill_theme("bg_secondary")
-            self.rect(x, y, col_width, row_height, 'F')
+            self.rect(x, y, card_width, card_height, 'F')
             self.set_fill_color(*colors[i])
-            self.rect(x, y, col_width, 3, 'F')
+            self.rect(x, y, card_width, 2, 'F')
             
-            self.set_xy(x + 3, y + 6)
-            self.set_font(self.selected_font, '', 8)
+            self.set_xy(x + 3, y + 5)
+            self.set_font(self.selected_font, '', 6)
             self.set_theme_colors("text_secondary")
-            self.cell(col_width - 6, 4, label, 0, 0, 'L')
+            self.cell(card_width - 6, 3, label[:20], 0, 0, 'L')
             
-            self.set_xy(x + 3, y + 13)
-            self.set_font(self.selected_font, 'B', 12)
+            self.set_xy(x + 3, y + 11)
+            self.set_font(self.selected_font, 'B', 10)
             self.set_text_color(*colors[i])
-            self.cell(col_width - 6, 6, fmt_compact(value), 0, 0, 'L')
-        self.set_y(y_start + (2 * (row_height + 5)) + 10)
+            self.cell(card_width - 6, 5, fmt_compact(value), 0, 0, 'L')
+        
+        self.set_y(start_y + 2 * (card_height + 3) + 5)
     
-    def add_technical_seo_section(self, indexed, error_404, crawled, discovered):
-        y_start = self.get_y() + 5
+    def add_technical_section(self, indexed, error_404, crawled, discovered):
+        """Compact technical SEO section"""
+        self.check_page_break(40)
         
+        start_y = self.get_y()
+        
+        # Indexed box
         self.set_fill_theme("bg_secondary")
-        self.rect(20, y_start, 80, 50, 'F')
+        self.rect(self.margin, start_y, 70, 35, 'F')
         self.set_fill_color(*self.theme["success"])
-        self.rect(20, y_start, 80, 4, 'F')
+        self.rect(self.margin, start_y, 70, 3, 'F')
         
-        self.set_xy(20, y_start + 12)
+        self.set_xy(self.margin, start_y + 8)
+        self.set_font(self.selected_font, '', 8)
+        self.set_theme_colors("text_secondary")
+        self.cell(70, 4, "INDEXED PAGES", 0, 0, 'C')
+        
+        self.set_xy(self.margin, start_y + 16)
+        self.set_font(self.selected_font, 'B', 20)
+        self.set_text_color(*self.theme["success"])
+        self.cell(70, 10, fmt_int(indexed), 0, 0, 'C')
+        
+        # Errors
+        x_error = self.margin + 80
+        errors = [
+            ("404 Errors", error_404, self.theme["error"]),
+            ("Crawled-Not Indexed", crawled, self.theme["warning"]),
+            ("Discovered-Not Indexed", discovered, self.theme["warning"])
+        ]
+        
+        for i, (label, value, color) in enumerate(errors):
+            y = start_y + i * 12
+            self.set_fill_color(*color)
+            self.rect(x_error, y, 3, 10, 'F')
+            
+            self.set_xy(x_error + 6, y + 1)
+            self.set_font(self.selected_font, '', 7)
+            self.set_theme_colors("text_secondary")
+            self.cell(60, 4, label, 0, 0, 'L')
+            
+            self.set_xy(x_error + 6, y + 5)
+            self.set_font(self.selected_font, 'B', 9)
+            self.set_text_color(*color)
+            self.cell(60, 4, f"{fmt_int(value)} pages", 0, 0, 'L')
+        
+        self.set_y(start_y + 40)
+    
+    def add_thank_you(self):
+        """Compact thank you section"""
+        self.add_page()
+        
+        self.set_y(80)
+        self.set_font(self.selected_font, 'B', 28)
+        self.set_theme_colors("text_primary")
+        self.cell(0, 15, "Thank You!", 0, 1, 'C')
+        
+        self.ln(8)
         self.set_font(self.selected_font, '', 10)
         self.set_theme_colors("text_secondary")
-        self.cell(80, 6, "INDEXED PAGES (VALID)", 0, 0, 'C')
+        msg = "Thank you for reviewing this SEO report. We are committed to driving continuous digital growth for your business."
+        self.set_x(35)
+        self.multi_cell(140, 5, msg, 0, 'C')
         
-        self.set_xy(20, y_start + 22)
-        self.set_font(self.selected_font, 'B', 28)
-        self.set_text_color(*self.theme["success"])
-        self.cell(80, 15, fmt_int(indexed), 0, 0, 'C')
-        
-        x_error = 110
-        error_items = [
-            ("Not Found (404)", error_404, self.theme["error"]),
-            ("Crawled - Not Indexed", crawled, self.theme["warning"]),
-            ("Discovered - Not Indexed", discovered, self.theme["warning"])
-        ]
-        for i, (label, value, color) in enumerate(error_items):
-            y = y_start + (i * 17)
-            self.set_fill_color(*color)
-            self.rect(x_error, y, 4, 15, 'F')
-            self.set_xy(x_error + 8, y + 2)
-            self.set_font(self.selected_font, '', 8)
-            self.set_theme_colors("text_secondary")
-            self.cell(50, 5, label, 0, 0, 'L')
-            self.set_xy(x_error + 8, y + 7)
-            self.set_font(self.selected_font, 'B', 11)
-            self.set_text_color(*color)
-            self.cell(50, 6, f"{fmt_int(value)} pages", 0, 0, 'L')
-        self.set_y(y_start + 55)
-    
-    def add_thank_you_page(self):
-        self.add_page()
-        self.set_fill_theme("bg_primary")
-        self.rect(0, 0, 210, 297, 'F')
-        self.set_fill_color(*self.theme["accent"])
-        self.rect(0, 100, 210, 2, 'F')
-        self.rect(0, 180, 210, 2, 'F')
-        
-        self.set_y(120)
-        self.set_font(self.selected_font, 'B', 36)
-        self.set_theme_colors("text_primary")
-        self.cell(0, 20, "Thank You!", 0, 1, 'C')
-        
-        self.ln(10)
-        self.set_font(self.selected_font, '', 12)
-        self.set_theme_colors("text_secondary")
-        message = (
-            "Thank you for taking the time to review this SEO performance report. "
-            "We are committed to driving continuous digital growth, optimizing your "
-            "web presence, and ensuring top-tier search engine rankings for your business. "
-            "Should you have any questions, please feel free to reach out to us."
-        )
-        self.set_x(30)
-        self.multi_cell(150, 7, message, 0, 'C')
-        
-        self.set_y(210)
-        self.set_font(self.selected_font, 'B', 16)
+        self.ln(15)
+        self.set_font(self.selected_font, 'B', 12)
         self.set_theme_colors("accent")
-        self.cell(0, 10, AGENCY_INFO["name"], 0, 1, 'C')
-        self.set_font(self.selected_font, '', 11)
+        self.cell(0, 6, AGENCY_INFO["name"], 0, 1, 'C')
+        self.set_font(self.selected_font, '', 9)
         self.set_theme_colors("text_secondary")
-        self.cell(0, 7, AGENCY_INFO["website"], 0, 1, 'C')
-        self.cell(0, 7, AGENCY_INFO["phone"], 0, 1, 'C')
-        self.cell(0, 7, AGENCY_INFO["email"], 0, 1, 'C')
+        self.cell(0, 5, f"{AGENCY_INFO['website']} | {AGENCY_INFO['phone']}", 0, 1, 'C')
 
 
 # ============================================================
-# 6. PDF GENERATION FUNCTION
+# 6. PDF GENERATION FUNCTION (DYNAMIC FLOW)
 # ============================================================
 def generate_pdf(chart_paths, logo_path=None):
     pdf = SEOReportPDF(
@@ -472,6 +493,7 @@ def generate_pdf(chart_paths, logo_path=None):
         font=st.session_state.selected_font
     )
     
+    # Cover Page
     pdf.add_cover_page(
         logo_path=logo_path,
         client_name=st.session_state.client_name,
@@ -480,90 +502,73 @@ def generate_pdf(chart_paths, logo_path=None):
         report_description=st.session_state.report_description
     )
     
-    # Page 2: Search Console
+    # Start content pages
     pdf.add_page()
-    pdf.set_y(30)
-    pdf.add_section_header("Search Console Performance", 1)
     
-    clicks_growth = calc_growth(st.session_state.sc_clicks, st.session_state.sc_clicks_prev)
-    impr_growth = calc_growth(st.session_state.sc_impressions, st.session_state.sc_impressions_prev)
-    ctr_growth = calc_growth(st.session_state.sc_ctr, st.session_state.sc_ctr_prev)
-    pos_growth = calc_growth(st.session_state.sc_position_prev, st.session_state.sc_position)
+    # Section 1: Search Console
+    pdf.add_section_title("Search Console Performance", 1)
+    pdf.add_metrics_row([
+        ("Clicks", fmt_int(st.session_state.sc_clicks), (66, 133, 244)),
+        ("Impressions", fmt_int(st.session_state.sc_impressions), (142, 36, 170)),
+        ("CTR", f"{st.session_state.sc_ctr:.2f}%", (22, 163, 74)),
+        ("Position", f"{st.session_state.sc_position:.1f}", (245, 158, 11))
+    ])
+    pdf.add_chart(chart_paths['sc_chart'], width=170, height_estimate=55)
     
-    pdf.add_metric_card(15, pdf.get_y(), 42, "Total Clicks", fmt_int(st.session_state.sc_clicks), 
-                        clicks_growth if st.session_state.comparison_enabled else None, (66, 133, 244))
-    pdf.add_metric_card(60, pdf.get_y() - 35, 42, "Impressions", fmt_int(st.session_state.sc_impressions),
-                        impr_growth if st.session_state.comparison_enabled else None, (142, 36, 170))
-    pdf.add_metric_card(105, pdf.get_y() - 35, 42, "Avg CTR", f"{st.session_state.sc_ctr:.2f}%",
-                        ctr_growth if st.session_state.comparison_enabled else None, (22, 163, 74))
-    pdf.add_metric_card(150, pdf.get_y() - 35, 42, "Avg Position", f"{st.session_state.sc_position:.1f}",
-                        pos_growth if st.session_state.comparison_enabled else None, (245, 158, 11))
+    # Section 2: Revenue & Traffic
+    pdf.add_section_title("Revenue & Traffic Dashboard", 2)
+    pdf.add_metrics_row([
+        ("Visits", fmt_int(st.session_state.rt_visit), (15, 23, 42)),
+        ("Revenue", fmt_money(st.session_state.rt_revenue), (22, 163, 74)),
+        ("Purchases", fmt_int(st.session_state.rt_ecommerce), (139, 92, 246))
+    ])
+    pdf.add_metrics_row([
+        ("Impressions", fmt_int(st.session_state.rt_impression), (66, 133, 244)),
+        ("Purchase Rev", fmt_money(st.session_state.rt_purchase_revenue), (245, 158, 11)),
+        ("Transactions", fmt_int(st.session_state.rt_transaction), (100, 116, 139))
+    ])
     
-    pdf.set_y(pdf.get_y() + 10)
-    pdf.add_chart_image(chart_paths['sc_chart'])
+    # Section 3: Keywords
+    pdf.add_section_title("Keyword Ranking Distribution", 3)
+    pdf.add_chart(chart_paths['kw_chart'], width=170, height_estimate=50)
     
-    # Revenue & Traffic
-    pdf.ln(5)
-    pdf.add_section_header("Revenue & Traffic Dashboard", 2)
-    
-    pdf.add_metric_card(15, pdf.get_y(), 55, "Visits", fmt_int(st.session_state.rt_visit))
-    pdf.add_metric_card(75, pdf.get_y() - 35, 55, "Total Revenue", fmt_money(st.session_state.rt_revenue))
-    pdf.add_metric_card(135, pdf.get_y() - 35, 55, "Impressions", fmt_int(st.session_state.rt_impression))
-    
-    pdf.set_y(pdf.get_y() + 5)
-    
-    pdf.add_metric_card(15, pdf.get_y(), 55, "Ecommerce", fmt_int(st.session_state.rt_ecommerce))
-    pdf.add_metric_card(75, pdf.get_y() - 35, 55, "Purchase Rev", fmt_money(st.session_state.rt_purchase_revenue))
-    pdf.add_metric_card(135, pdf.get_y() - 35, 55, "Transactions", fmt_int(st.session_state.rt_transaction))
-    
-    # Page 3: Keywords
-    pdf.add_page()
-    pdf.set_y(30)
-    pdf.add_section_header("Keyword Ranking Distribution", 3)
-    pdf.add_chart_image(chart_paths['kw_chart'])
-    
-    pdf.ln(5)
-    pdf.add_section_header("Top Performing Keywords", 4)
+    # Section 4: Top Keywords Table
+    pdf.add_section_title("Top Performing Keywords", 4)
     pdf.add_keywords_table(st.session_state.top_keywords)
     
-    # Page 4: Backlinks & Technical
-    pdf.add_page()
-    pdf.set_y(30)
-    pdf.add_section_header("Backlink Profile", 5)
-    
+    # Section 5: Backlinks
+    pdf.add_section_title("Backlink Profile", 5)
     backlinks = {
-        "Profile Backlinks": st.session_state.bl_profile,
+        "Profile": st.session_state.bl_profile,
         "Citation": st.session_state.bl_citation,
         "Web 2.0": st.session_state.bl_web2,
-        "Social Share": st.session_state.bl_social,
+        "Social": st.session_state.bl_social,
         "Guest Post": st.session_state.bl_guest,
         "Comment": st.session_state.bl_comment
     }
-    pdf.add_backlink_summary(backlinks)
-    pdf.add_chart_image(chart_paths['bl_chart'], width=120)
+    pdf.add_backlinks_grid(backlinks)
+    pdf.add_chart(chart_paths['bl_chart'], width=100, height_estimate=60)
     
-    # Technical SEO
-    pdf.ln(5)
-    pdf.add_section_header("Technical SEO & Indexing Health", 6)
-    pdf.add_technical_seo_section(
+    # Section 6: Technical SEO
+    pdf.add_section_title("Technical SEO & Indexing", 6)
+    pdf.add_technical_section(
         st.session_state.tech_indexed,
         st.session_state.tech_404,
         st.session_state.tech_crawled_not_indexed,
         st.session_state.tech_discovered_not_indexed
     )
     
-    # Traffic Analytics
-    pdf.add_page()
-    pdf.set_y(30)
-    pdf.add_section_header("Traffic Analytics Summary", 7)
-    
-    pdf.add_metric_card(15, pdf.get_y(), 42, "Clicks", fmt_compact(st.session_state.ta_click))
-    pdf.add_metric_card(60, pdf.get_y() - 35, 42, "Impressions", fmt_compact(st.session_state.ta_impression))
-    pdf.add_metric_card(105, pdf.get_y() - 35, 42, "CTR", f"{st.session_state.ta_ctr:.2f}%")
-    pdf.add_metric_card(150, pdf.get_y() - 35, 42, "Avg Position", f"{st.session_state.ta_position:.2f}")
+    # Section 7: Traffic Analytics
+    pdf.add_section_title("Traffic Analytics Summary", 7)
+    pdf.add_metrics_row([
+        ("Clicks", fmt_compact(st.session_state.ta_click), (66, 133, 244)),
+        ("Impressions", fmt_compact(st.session_state.ta_impression), (142, 36, 170)),
+        ("CTR", f"{st.session_state.ta_ctr:.2f}%", (22, 163, 74)),
+        ("Position", f"{st.session_state.ta_position:.2f}", (245, 158, 11))
+    ])
     
     # Thank You Page
-    pdf.add_thank_you_page()
+    pdf.add_thank_you()
     
     return bytes(pdf.output())
 
