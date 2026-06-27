@@ -538,7 +538,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 <head>
 <meta charset="UTF-8">
 <style>
-    /* ১. জিরো মার্জিন ও ব্যাকগ্রাউন্ড ইমেজ (a4.png) */
+    /* ১ ও ৮. জিরো মার্জিন এবং ফুল-পেজ ব্যাকগ্রাউন্ড ফিক্স (প্রতি পেজে নিখুঁতভাবে রিপিট হবে) */
     @page {{ size: A4; margin: 0; }} 
     
     body {{ 
@@ -546,18 +546,19 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         margin: 0; 
         padding: 0; 
         color: #e2e8f0; 
+        background-color: #0b0f19;
         background-image: url('https://raw.githubusercontent.com/digitalanalyticMarketingAgency/seo-pdf-app/main/a4.png');
-        background-size: 100% 100%; 
-        background-repeat: no-repeat;
+        background-size: 210mm 297mm; /* একদম A4 সাইজে ফিক্সড */
+        background-repeat: repeat; /* মাল্টি-পেজ পিডিএফের জন্য ম্যাজিক রুল */
     }}
     
-    /* ২. সেফ জোন (কন্টেন্ট যেন বর্ডারে বা ফুটারে না লাগে) */
+    /* ২ ও ১১. সেফ জোন এবং ব্রীদিং স্পেস (দমবন্ধ ভাব কমানো) */
     .main-container {{ 
-        padding: 35px 30px 90px 30px; 
+        padding: 40px 35px 100px 35px; /* নিচে ১০০px ফাঁকা ফুটারের জন্য */
         box-sizing: border-box;
     }}
     
-    /* ৩. প্রফেশনাল হেডার (গ্লাস ইফেক্ট) */
+    /* ১২. প্রফেশনাল হেডার ও সাবটাইটেল কালার ফিক্স */
     .header-banner {{ 
         background-color: rgba(19, 17, 28, 0.85); 
         border: 1px solid rgba(139, 92, 246, 0.3); 
@@ -565,55 +566,88 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         padding: 30px 20px; 
         text-align: center; 
         border-radius: 12px; 
-        margin-bottom: 30px; 
+        margin-bottom: 40px; 
     }}
-    .header-title {{ font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; color: #ffffff; letter-spacing: 1px; }}
-    .header-subtitle {{ font-size: 11pt; color: #a78bfa; margin-top: 8px; font-weight: 500; }}
+    .header-title {{ font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; letter-spacing: 1px; color: #ffffff; }}
+    .header-subtitle {{ font-size: 12pt; color: #e2e8f0; margin-top: 10px; font-weight: 500; }} /* কালার উজ্জ্বল করা হয়েছে */
     
-    /* ৪. সেকশন হেডিং */
+    /* সেকশন হেডিং */
     h2 {{ 
         font-size: 16pt; 
-        color: #f8fafc; 
-        margin-top: 30px; 
-        margin-bottom: 15px; 
+        color: #ffffff; 
+        margin-top: 35px; 
+        margin-bottom: 20px; 
         border-bottom: 1px solid rgba(255,255,255,0.1);
-        padding-bottom: 8px;
+        padding-bottom: 10px;
         page-break-after: avoid; 
     }}
     
-    /* ৫. কার্ড ও গ্রিড (পপ-আউট ইফেক্ট ও পেজ-ব্রেক ফিক্স) */
-    .grid {{ width: 100%; border-collapse: separate; border-spacing: 15px 0; margin-bottom: 25px; page-break-inside: avoid; }}
-    
+    /* ৯. কার্ড ও গ্রিড এলাইনমেন্ট ফিক্স (সব কার্ড সমান উচ্চতার হবে) */
+    .grid {{ 
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 20px; 
+        align-items: stretch; 
+        margin-bottom: 30px; 
+        page-break-inside: avoid; 
+    }}
     .card {{ 
+        flex: 1; 
         background-color: rgba(17, 24, 39, 0.85); 
         border: 1px solid rgba(255,255,255,0.05); 
         border-top: 2px solid #8b5cf6; 
         border-radius: 12px; 
-        padding: 22px 10px; 
+        padding: 24px 10px; 
         text-align: center; 
         page-break-inside: avoid;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }}
-    .label {{ font-size: 9pt; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }}
+    .label {{ font-size: 9pt; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px; }}
     .value {{ font-size: 22pt; font-weight: 800; color: #ffffff; }}
     
-    /* ৬. চার্টগুলো সুন্দরভাবে বাঁধানো */
+    /* ৩, ৫, ৬ ও ১০. চার্টের সাইজ, ওভারল্যাপ এবং টেক্সট ক্র্যাশ ফিক্স */
     img {{ 
         background-color: #ffffff; 
-        border: 6px solid rgba(17, 24, 39, 0.95); 
+        border: 5px solid rgba(17, 24, 39, 0.95); 
         border-radius: 12px; 
-        padding: 10px; 
-        max-width: 100%; 
+        padding: 20px; /* চার্টের চারপাশে বেশি সাদা জায়গা দেওয়া হলো যাতে টেক্সট না কাটে */
+        max-width: 90%; 
+        max-height: 350px; /* সাইজ কন্ট্রোল */
+        display: block; 
+        margin: 0 auto 20px auto; 
+        object-fit: contain; 
         page-break-inside: avoid;
     }}
+
+    /* ৭. ব্রোকেন লোগো বা ইমেজ ফিক্স (ভুল লোগোগুলো হাইড করা) */
+    img[alt*="logo"], .footer img, img[src*="logo"] {{
+        display: none !important;
+    }}
     
-    /* ৭. ওয়ার্নিং বক্স */
-    .error-box {{ background-color: rgba(69, 10, 10, 0.85); border-left: 5px solid #ef4444; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #fecaca; font-weight: 600; page-break-inside: avoid; }}
-    .warn-box {{ background-color: rgba(66, 32, 6, 0.85); border-left: 5px solid #f59e0b; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #fde68a; font-weight: 600; page-break-inside: avoid; }}
+    /* ওয়ার্নিং বক্স ফিক্স */
+    .error-box {{ background-color: rgba(69, 10, 10, 0.85); border-left: 5px solid #ef4444; border-radius: 8px; padding: 15px; margin-bottom: 12px; color: #fecaca; font-weight: 600; page-break-inside: avoid; }}
+    .warn-box {{ background-color: rgba(66, 32, 6, 0.85); border-left: 5px solid #f59e0b; border-radius: 8px; padding: 15px; margin-bottom: 12px; color: #fde68a; font-weight: 600; page-break-inside: avoid; }}
     
-    /* ৮. ট্রান্সপারেন্ট ফুটার (ব্যাকগ্রাউন্ড ইমেজের সাথে মিশে যাবে) */
+    /* ১৩. ব্যাকলিংক টেবিল ফিক্স */
+    table {{
+        width: 100%;
+        border-collapse: collapse;
+        background-color: rgba(17, 24, 39, 0.85);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 25px;
+        color: #e2e8f0;
+        page-break-inside: avoid;
+    }}
+    th, td {{ padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; }}
+    td:last-child {{ font-weight: bold; color: #ffffff; text-align: right; }}
+
+    /* ৪. ভাসমান ফুটার ফিক্স */
     .footer {{ 
         position: fixed; 
-        bottom: 18px; 
+        bottom: 20px; /* ইমেজের ডার্ক ব্যান্ডের ঠিক মাঝখানে বসবে */
         left: 0; 
         right: 0; 
         text-align: center; 
@@ -622,6 +656,14 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         background: transparent; 
         border: none; 
     }}
+
+    /* ২. পেজ ৪ এর ইনভিজিবল টেক্সট ফিক্স */
+    .thankyou, .thankyou h2, .thankyou p, p {{
+        color: #ffffff !important;
+        text-align: center;
+        page-break-inside: avoid;
+    }}
+    .thankyou {{ padding: 40px 20px; }}
 </style>
 </head>
 <body>
