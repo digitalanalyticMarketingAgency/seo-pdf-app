@@ -52,7 +52,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("📈 SEO Performance Report Generator")
-st.caption("Manually enter your SEO data below to generate a live dashboard and export a professional PDF report."))
+st.caption("Manually enter your SEO data below to generate a live dashboard and export a professional PDF report.")
 
 # ============================================================
 # SIDEBAR — MANUAL DATA INPUT
