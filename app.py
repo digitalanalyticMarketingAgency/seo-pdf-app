@@ -160,6 +160,19 @@ def growth_indicator(growth, for_pdf=False):
 # ============================================================
 # 5. PDF CLASS (FPDF2 - DYNAMIC FLOW)
 # ============================================================
+# ১৫৯-১৬২ নম্বর লাইনের নিচে এখানে পেস্ট করো:
+
+THEMES = {
+    "Light": {
+        "text_primary": (255, 255, 255),      # মেইন টেক্সট (সাদা)
+        "text_secondary": (220, 220, 220),    # হালকা ধূসর টেক্সট
+        "accent": (150, 100, 255),            # গ্রাফ বা বারের জন্য আগের কালার
+        "bg_secondary": (30, 41, 59)          # কার্ডের ব্যাকগ্রাউন্ড
+    }
+}
+
+# এরপর তোমার ১৬৩ নম্বর লাইন থেকে ক্লাস শুরু হবে:
+
 class SEOReportPDF(FPDF):
     def __init__(self, theme="Light", font="Helvetica"):
         super().__init__(orientation='P', unit='mm', format='A4')
