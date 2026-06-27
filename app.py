@@ -538,75 +538,89 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 <head>
 <meta charset="UTF-8">
 <style>
-    /* ১. পুরো পেজের ব্যাকগ্রাউন্ড ডার্ক করা */
-    @page {{ size: A4; margin: 15mm; }}
+    /* ১. জিরো মার্জিন ও ব্যাকগ্রাউন্ড ইমেজ (a4.png) */
+    @page {{ size: A4; margin: 0; }} 
+    
     body {{ 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        background-color: #0b0f19; 
+        font-family: 'Segoe UI', Arial, sans-serif; 
         margin: 0; 
         padding: 0; 
         color: #e2e8f0; 
+        background-image: url('https://raw.githubusercontent.com/digitalanalyticMarketingAgency/seo-pdf-app/main/a4.png');
+        background-size: 100% 100%; 
+        background-repeat: no-repeat;
     }}
     
+    /* ২. সেফ জোন (কন্টেন্ট যেন বর্ডারে বা ফুটারে না লাগে) */
     .main-container {{ 
-        padding: 20px; 
-        background-color: #0b0f19; 
-        min-height: 100vh;
+        padding: 35px 30px 90px 30px; 
+        box-sizing: border-box;
     }}
     
-    /* ২. হেডার */
+    /* ৩. প্রফেশনাল হেডার (গ্লাস ইফেক্ট) */
     .header-banner {{ 
-        background: #13111c; 
-        border: 1px solid #2d2d44; 
+        background-color: rgba(19, 17, 28, 0.85); 
+        border: 1px solid rgba(139, 92, 246, 0.3); 
         color: #ffffff; 
-        padding: 30px; 
+        padding: 30px 20px; 
         text-align: center; 
         border-radius: 12px; 
         margin-bottom: 30px; 
     }}
-    .header-title {{ font-size: 22pt; font-weight: 700; text-transform: uppercase; margin: 0; color: #ffffff; }}
-    .header-subtitle {{ font-size: 11pt; color: #a78bfa; margin-top: 5px; }}
+    .header-title {{ font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; color: #ffffff; letter-spacing: 1px; }}
+    .header-subtitle {{ font-size: 11pt; color: #a78bfa; margin-top: 8px; font-weight: 500; }}
     
-    /* ৩. কার্ড ও গ্রিড সিস্টেম (এলাইনমেন্ট ফিক্স) */
-    .grid {{ 
-        display: flex; 
-        flex-wrap: wrap; 
-        gap: 20px; 
-        margin-bottom: 25px; 
+    /* ৪. সেকশন হেডিং */
+    h2 {{ 
+        font-size: 16pt; 
+        color: #f8fafc; 
+        margin-top: 30px; 
+        margin-bottom: 15px; 
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 8px;
+        page-break-after: avoid; 
     }}
+    
+    /* ৫. কার্ড ও গ্রিড (পপ-আউট ইফেক্ট ও পেজ-ব্রেক ফিক্স) */
+    .grid {{ width: 100%; border-collapse: separate; border-spacing: 15px 0; margin-bottom: 25px; page-break-inside: avoid; }}
+    
     .card {{ 
-        flex: 1; 
-        background-color: #111827; 
-        border: 1px solid #1f2937; 
+        background-color: rgba(17, 24, 39, 0.85); 
+        border: 1px solid rgba(255,255,255,0.05); 
+        border-top: 2px solid #8b5cf6; 
         border-radius: 12px; 
-        padding: 20px; 
+        padding: 22px 10px; 
         text-align: center; 
+        page-break-inside: avoid;
     }}
+    .label {{ font-size: 9pt; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }}
+    .value {{ font-size: 22pt; font-weight: 800; color: #ffffff; }}
     
-    /* ৪. চার্ট এবং ইমেজ ফিক্স */
+    /* ৬. চার্টগুলো সুন্দরভাবে বাঁধানো */
     img {{ 
         background-color: #ffffff; 
-        border-radius: 8px; 
-        padding: 5px; 
+        border: 6px solid rgba(17, 24, 39, 0.95); 
+        border-radius: 12px; 
+        padding: 10px; 
         max-width: 100%; 
+        page-break-inside: avoid;
     }}
     
-    /* ৫. ওয়ার্নিং বক্স ফিক্স */
-    .error-box {{ background-color: #450a0a; border-left: 5px solid #ef4444; border-radius: 8px; padding: 12px; margin: 10px 0; color: #fecaca; font-weight: 600; }}
-    .warn-box {{ background-color: #422006; border-left: 5px solid #f59e0b; border-radius: 8px; padding: 12px; margin: 10px 0; color: #fde68a; font-weight: 600; }}
+    /* ৭. ওয়ার্নিং বক্স */
+    .error-box {{ background-color: rgba(69, 10, 10, 0.85); border-left: 5px solid #ef4444; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #fecaca; font-weight: 600; page-break-inside: avoid; }}
+    .warn-box {{ background-color: rgba(66, 32, 6, 0.85); border-left: 5px solid #f59e0b; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #fde68a; font-weight: 600; page-break-inside: avoid; }}
     
-    /* ৬. ফুটার */
+    /* ৮. ট্রান্সপারেন্ট ফুটার (ব্যাকগ্রাউন্ড ইমেজের সাথে মিশে যাবে) */
     .footer {{ 
         position: fixed; 
-        bottom: 0; 
+        bottom: 18px; 
         left: 0; 
         right: 0; 
-        background-color: #0b0f19; 
-        color: #6b7280; 
         text-align: center; 
-        padding: 10px; 
-        font-size: 9pt; 
-        border-top: 1px solid #1f2937;
+        font-size: 10pt; 
+        color: #9ca3af; 
+        background: transparent; 
+        border: none; 
     }}
 </style>
 </head>
