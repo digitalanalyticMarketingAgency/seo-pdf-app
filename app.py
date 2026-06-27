@@ -566,7 +566,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         margin-bottom: 30px; 
         page-break-inside: avoid;
     }}
-    .header-title { font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; }}
+    .header-title {{ font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; }}
     
     /* সেকশন হেডিং */
     h2 {{ 
@@ -580,7 +580,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     }}
     
     /* পিডিএফ-এর জন্য নিরাপদ গ্রিড সিস্টেম (Table Layout) */
-    .grid { display: table; width: 100%; border-spacing: 15px; margin-bottom: 20px; }}
+    .grid {{ display: table; width: 100%; border-spacing: 15px; margin-bottom: 20px; }}
     .card {{ 
         display: table-cell; 
         width: 33%; 
@@ -592,8 +592,8 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         text-align: center;
         page-break-inside: avoid;
     }}
-    .label { font-size: 9pt; color: #9ca3af; text-transform: uppercase; margin-bottom: 8px; display: block; }}
-    .value { font-size: 20pt; font-weight: 800; color: #ffffff; display: block; }}
+    .label {{ font-size: 9pt; color: #9ca3af; text-transform: uppercase; margin-bottom: 8px; display: block; }}
+    .value {{ font-size: 20pt; font-weight: 800; color: #ffffff; display: block; }}
     
     /* চার্ট স্টাইল */
     img {{ 
@@ -617,7 +617,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         page-break-inside: avoid; 
     }}
     
-    /* ফুটার ফিক্স (নিরাপদ অবস্থান) */
+    /* ফুটার ফিক্স */
     .footer {{ 
         position: absolute; 
         bottom: 20px; 
