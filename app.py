@@ -22,20 +22,20 @@ st.set_page_config(page_title="SEO Performance Report Generator", page_icon="�
 st.markdown("""
 <style>
    /* সাইডবার ডিজাইন */
-    [data-testid="stSidebar"] {
+    [data-testid="stSidebar"] {{
         background-color: #0f172a !important;
-    }
+    }}
     
-    [data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
+    [data-testid="stSidebar"] div[data-testid="stSidebarContent"] {{
         background-color: #0f172a !important;
-    }
+    }}
 
-    [data-testid="stSidebar"] * {
+    [data-testid="stSidebar"] * {{
         color: #ffffff !important;
-    }
-    .stTextInput input, .stNumberInput input {
+    }}
+    .stTextInput input, .stNumberInput input {{
         color: black !important;
-    }
+    }}
 
     /* Metric Cards */
     .metric-card {{
