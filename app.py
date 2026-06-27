@@ -634,23 +634,6 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
   </tr>
 </table>
 
-<div style="page-break-before: always;"></div>
-<div class="thankyou">
-  <h1>Thank You!</h1>
-  <p style="max-width:480px; margin:0 auto; color:#64748b; font-size:12pt; line-height:1.7;">
-    Thank you for taking the time to review this SEO performance report. We are committed to driving
-    continuous digital growth, optimizing your web presence, and ensuring top-tier search engine rankings
-    for your business. Should you have any questions, please feel free to reach out to us.
-  </p>
-  <p style="margin-top:40px; color:#94a3b8; font-size:11pt;">{agency_name} &nbsp;|&nbsp; {report_date}</p>
-</div>
-
-<!-- লাইন ৬৩৯ এর পর কন্টেন্ট শেষ হবে -->
-</div> <!-- এই </div> টি কন্টেইনার ক্লোজ করবে (লাইন ৬৪০) -->
-
-<div class="footer">Digital Analytic | www.digital-analytic.com</div> <!-- এরপর আপনার ফুটার থাকবে (লাইন ৬৪১) -->
-</body>
-</html>"""
 
 
 st.subheader("📄 Export Report")
@@ -666,6 +649,3 @@ st.download_button(
     file_name="SEO_Report.pdf",
     mime="application/pdf"
 )
-        except Exception as e:
-            st.error(f"Could not generate PDF: {e}")
-            st.error(f"Could not generate PDF: {e}")
