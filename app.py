@@ -539,9 +539,9 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
 <meta charset="UTF-8">
 <style>
     /* পিডিএফ পেজ সেটিংস */
-    @page { size: A4; margin: 0; } 
+    @page {{ size: A4; margin: 0; }} 
     
-    body { 
+    body {{ 
         font-family: 'Segoe UI', Arial, sans-serif; 
         margin: 0; 
         padding: 0; 
@@ -550,7 +550,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         background-image: url('https://raw.githubusercontent.com/digitalanalyticMarketingAgency/seo-pdf-app/main/a4.png');
         background-size: 210mm 297mm;
         background-repeat: repeat; 
-    }
+    }}
     
     /* কন্টেন্ট কন্টেইনার */
     .main-container { padding: 40px 35px 80px 35px; }
