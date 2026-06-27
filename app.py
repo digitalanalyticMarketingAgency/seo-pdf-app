@@ -111,7 +111,6 @@ def init_session_state():
         "tech_404": 3,
         "tech_crawled_not_indexed": 42,
         "tech_discovered_not_indexed": 18,
-        "gsc_graph_upload": None,
     }
     
     for key, value in defaults.items():
