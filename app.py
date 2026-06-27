@@ -569,7 +569,7 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
     .header-title { font-size: 24pt; font-weight: 800; text-transform: uppercase; margin: 0; }}
     
     /* সেকশন হেডিং */
-    h2 { 
+    h2 {{ 
         font-size: 16pt; 
         color: #ffffff; 
         margin-top: 30px; 
@@ -592,18 +592,18 @@ def build_pdf_html(agency_name, report_date, sc_clicks, sc_impressions, sc_ctr, 
         text-align: center;
         page-break-inside: avoid;
     }}
-    .label { font-size: 9pt; color: #9ca3af; text-transform: uppercase; margin-bottom: 8px; display: block; }
+    .label { font-size: 9pt; color: #9ca3af; text-transform: uppercase; margin-bottom: 8px; display: block; }}
     .value { font-size: 20pt; font-weight: 800; color: #ffffff; display: block; }}
     
     /* চার্ট স্টাইল */
-    img { 
+    img {{ 
         max-width: 90%; 
         display: block; 
         margin: 10px auto; 
         border: 5px solid #1f2937; 
         border-radius: 12px; 
         page-break-inside: avoid; 
-    }
+    }}
     
     /* ওয়ার্নিং বক্স */
     .error-box, .warn-box {{ 
