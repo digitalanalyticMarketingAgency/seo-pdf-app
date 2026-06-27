@@ -1023,7 +1023,7 @@ st.markdown('<div class="section-header">7. Closing Page Preview</div>', unsafe_
 
 st.markdown(f"""
 <div style="text-align: center; padding: 50px 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 16px; margin: 20px 0; border: 1px solid #cbd5e1;">
-    <h1 style="color: #0f172a; font-size: 36px; margin-bottom: 20px;">Thank You!</h1>
+    <h1 style="color: #ffffff; font-size: 36px; margin-bottom: 20px;">Thank You!</h1>
     <p style="max-width:650px; margin:0 auto; color:#64748b; font-size:16px; line-height:1.8;">
         Thank you for taking the time to review this SEO performance report. We are committed to driving
         continuous digital growth, optimizing your web presence, and ensuring top-tier search engine rankings
